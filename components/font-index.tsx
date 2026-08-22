@@ -142,18 +142,18 @@ export function FontIndex({
     );
 
   return (
-    <>
-      {/* ── Filter bar ───────────────────────────────────── */}
-      <div className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div className="border border-ink/25 bg-paper p-4 md:p-6">
+    <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        {/* ── Sidebar ─────────────────────────────────── */}
+        <aside className="lg:col-span-3 lg:sticky lg:top-14 lg:self-start">
           {/* Search */}
-          <label className="flex items-center gap-3 border-b border-ink/15 pb-4">
+          <label className="flex items-center gap-3 border-b border-ink/25 pb-4">
             <Search className="h-4 w-4 shrink-0 text-ink/40" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search name, designer, tagline…"
+              placeholder="Search…"
               aria-label="Search typefaces"
               className="w-full bg-transparent text-sm outline-none placeholder:text-ink/30"
             />
@@ -170,10 +170,10 @@ export function FontIndex({
           </label>
 
           {/* Categories */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-4">
-            <span className="font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+          <div className="mt-5">
+            <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
               Type
-            </span>
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {(["all", ...CATEGORIES] as const).map((cat) => (
                 <button
@@ -194,10 +194,10 @@ export function FontIndex({
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-3">
-            <span className="font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+          <div className="mt-5">
+            <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
               Tags
-            </span>
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {tags.map((tag) => (
                 <button
@@ -216,71 +216,71 @@ export function FontIndex({
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Result meta */}
-        <div className="flex flex-wrap items-center justify-between gap-2 py-4 font-mono text-[10px] tracking-[0.2em] uppercase">
-          <span>
-            Showing{" "}
-            <span className="text-accent">{filtered.length}</span> of{" "}
-            {items.length}
-          </span>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearAll}
-              className="inline-flex items-center gap-1 transition-colors hover:text-accent"
-            >
-              Clear filters
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
+          {/* Meta + Clear */}
+          <div className="mt-6 flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.2em] uppercase">
+            <span>
+              <span className="text-accent">{filtered.length}</span> of{" "}
+              {items.length}
+            </span>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex items-center gap-1 transition-colors hover:text-accent"
+              >
+                Clear
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        </aside>
+
+        {/* ── Results ─────────────────────────────────── */}
+        <div className="lg:col-span-9">
+          <div className="border-t border-ink">
+            {groups.length === 0 ? (
+              <div className="flex min-h-[320px] flex-col items-center justify-center gap-6 border border-ink/25 p-10 text-center">
+                <p className="text-3xl font-bold tracking-tight uppercase md:text-5xl">
+                  Nothing found
+                  <span className="text-outline"> in the dark</span>
+                </p>
+                <p className="max-w-sm text-sm text-ink/60">
+                  No typeface matches that combination. Loosen the search, or
+                  start over.
+                </p>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="border border-ink px-5 py-3 text-xs font-medium tracking-[0.2em] uppercase transition-colors hover:bg-ink hover:text-paper"
+                >
+                  Reset →
+                </button>
+              </div>
+            ) : (
+              groups.map((group) => (
+                <div key={group.cat}>
+                  <div className="flex items-baseline justify-between border-b border-ink bg-ink px-4 py-2.5 text-paper md:px-8">
+                    <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase">
+                      {group.cat}
+                    </h2>
+                    <span className="font-mono text-[10px] text-paper/50">
+                      {group.fonts.length}
+                    </span>
+                  </div>
+                  {group.fonts.map((font, i) => (
+                    <Row
+                      key={font.slug}
+                      font={font}
+                      index={group.offset + i + 1}
+                    />
+                  ))}
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
-
-      {/* ── Results ──────────────────────────────────────── */}
-      <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
-        {groups.length === 0 ? (
-          <div className="flex min-h-[320px] flex-col items-center justify-center gap-6 border border-ink/25 p-10 text-center">
-            <p className="text-3xl font-bold tracking-tight uppercase md:text-5xl">
-              Nothing found<span className="text-outline"> in the dark</span>
-            </p>
-            <p className="max-w-sm text-sm text-ink/60">
-              No typeface matches that combination of filters. Loosen the
-              search, or start over.
-            </p>
-            <button
-              type="button"
-              onClick={clearAll}
-              className="border border-ink px-5 py-3 text-xs font-medium tracking-[0.2em] uppercase transition-colors hover:bg-ink hover:text-paper"
-            >
-              Reset index →
-            </button>
-          </div>
-        ) : (
-          <div className="border-t border-ink">
-            {groups.map((group) => (
-              <div key={group.cat}>
-                <div className="flex items-baseline justify-between border-b border-ink bg-ink px-4 py-2.5 text-paper md:px-8">
-                  <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase">
-                    {group.cat}
-                  </h2>
-                  <span className="font-mono text-[10px] text-paper/50">
-                    {group.fonts.length}
-                  </span>
-                </div>
-                {group.fonts.map((font, i) => (
-                  <Row
-                    key={font.slug}
-                    font={font}
-                    index={group.offset + i + 1}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </>
+    </section>
   );
 }

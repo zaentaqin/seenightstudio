@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   { index: "01", label: "Fonts", href: "/fonts" },
@@ -34,6 +35,10 @@ export function Nav() {
               </span>
             </Link>
           ))}
+
+          <div className="border-l border-ink/15">
+            <ThemeToggle />
+          </div>
         </nav>
       </div>
     </header>

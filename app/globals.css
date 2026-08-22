@@ -1,12 +1,24 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme inline {
-  --color-ink: #111111;
-  --color-paper: #f2efe9;
-  --color-accent: #ff3d00;
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
 
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+:root {
+  --ink: #111111;
+  --paper: #f2efe9;
+  --accent: #ff3d00;
+}
+
+.dark {
+  --ink: #f2efe9;
+  --paper: #111111;
+  --accent: #ff6d3d;
 }
 
 html {
@@ -14,13 +26,13 @@ html {
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--paper);
+  color: var(--ink);
 }
 
 ::selection {
-  background: var(--color-accent);
-  color: var(--color-paper);
+  background: var(--accent);
+  color: var(--paper);
 }
 
 /* Outlined display text */
@@ -59,23 +71,23 @@ body {
 }
 
 /* Range inputs, brutalist minimal */
-input[type='range'] {
-  accent-color: var(--color-ink);
+input[type="range"] {
+  accent-color: var(--ink);
 }
 
-input[type='range']::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
   height: 14px;
-  background: var(--color-ink);
+  background: var(--ink);
   border-radius: 0;
   cursor: ew-resize;
 }
 
-input[type='range']::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   width: 14px;
   height: 14px;
-  background: var(--color-ink);
+  background: var(--ink);
   border: none;
   border-radius: 0;
   cursor: ew-resize;

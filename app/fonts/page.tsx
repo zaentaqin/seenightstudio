@@ -24,10 +24,6 @@ export default function FontsPage() {
           <span>{typefaces.length} retail typefaces</span>
           <span className="hidden md:inline">Prices in USD</span>
         </div>
-
-        <h1 className="py-10 leading-[0.85] font-bold tracking-tighter uppercase select-none [font-size:clamp(3.5rem,12vw,12rem)]">
-          All<span className="text-outline">Fonts</span>
-        </h1>
       </section>
 
       <Suspense
