@@ -8,37 +8,33 @@ import { formatPrice, type Category, type Typeface } from "@/lib/typefaces";
 
 export type IndexItem = Typeface & { fontVar: string };
 
-function Row({ font, index }: { font: IndexItem; index: number }) {
+function Row({ font }: { font: IndexItem }) {
   return (
     <Link
       href={`/fonts/${font.slug}`}
       className="group grid grid-cols-12 items-center gap-2 border-b border-ink/15 px-4 py-6 transition-colors hover:bg-ink hover:text-paper md:px-8"
     >
-      <span className="col-span-2 font-mono text-[10px] tracking-[0.15em] text-ink/40 group-hover:text-paper/40 sm:col-span-1">
-        {String(index).padStart(2, "0")}
-      </span>
-
       <span
-        className="col-span-10 truncate text-3xl leading-none transition-transform duration-200 group-hover:translate-x-2 sm:col-span-6 md:text-4xl lg:col-span-5"
+        className="col-span-12 truncate text-3xl leading-none transition-transform duration-200 group-hover:translate-x-2 sm:col-span-5 md:text-4xl"
         style={{ fontFamily: `var(${font.fontVar})` }}
       >
         {font.name}
       </span>
 
-      <span className="col-span-8 col-start-3 truncate text-xs text-ink/50 italic group-hover:text-paper/50 sm:col-span-3 sm:col-start-auto md:text-sm">
+      <span className="col-span-12 truncate text-xs text-ink/50 italic group-hover:text-paper/50 sm:col-span-4 sm:col-start-6 md:text-sm">
         {font.tagline}
       </span>
 
-      <span className="hidden font-mono text-[10px] tracking-[0.1em] uppercase group-hover:text-paper/60 lg:col-span-1 lg:block">
+      <span className="hidden font-mono text-[10px] tracking-[0.1em] uppercase group-hover:text-paper/60 sm:col-span-1 sm:block">
         {font.styles} st
       </span>
-      <span className="hidden font-mono text-[10px] tracking-[0.1em] group-hover:text-paper/60 lg:col-span-1 lg:block">
+      <span className="hidden font-mono text-[10px] tracking-[0.1em] group-hover:text-paper/60 sm:col-span-1 sm:block">
         ©{String(font.year).slice(2)}
       </span>
-      <span className="col-span-2 text-right font-mono text-xs group-hover:text-accent sm:col-span-1">
+      <span className="col-span-1 text-right font-mono text-xs group-hover:text-accent">
         {formatPrice(font.price)}
       </span>
-      <ArrowUpRight className="col-span-2 h-5 w-5 justify-self-end opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100" />
+      <ArrowUpRight className="col-span-1 h-5 w-5 justify-self-end opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100" />
     </Link>
   );
 }
@@ -107,16 +103,7 @@ export function FontIndex({
       CATEGORIES.map((cat) => ({
         cat,
         fonts: filtered.filter((t) => t.category === cat),
-      }))
-        .filter((g) => g.fonts.length > 0)
-        .reduce<{ cat: Category; fonts: IndexItem[]; offset: number }[]>(
-          (acc, g) => {
-            const last = acc[acc.length - 1];
-            const offset = last ? last.offset + last.fonts.length : 0;
-            return [...acc, { ...g, offset }];
-          },
-          [],
-        ),
+      })).filter((g) => g.fonts.length > 0),
     [filtered],
   );
 
@@ -204,12 +191,8 @@ export function FontIndex({
                   {group.fonts.length}
                 </span>
               </div>
-              {group.fonts.map((font, i) => (
-                <Row
-                  key={font.slug}
-                  font={font}
-                  index={group.offset + i + 1}
-                />
+              {group.fonts.map((font) => (
+                <Row key={font.slug} font={font} />
               ))}
             </div>
           ))

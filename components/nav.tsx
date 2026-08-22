@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { allTags, typefaces, type Category } from "@/lib/typefaces";
+import { allTags, type Category } from "@/lib/typefaces";
 
 const navLinks = [
-  { index: "01", label: "About", href: "/about" },
-  { index: "02", label: "Contact", href: "/contact" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const CATEGORIES: Category[] = ["sans", "serif", "display", "mono", "script"];
@@ -31,16 +31,10 @@ export function Nav() {
           <div className="group/link relative">
             <Link
               href="/fonts"
-              className="flex h-full items-baseline gap-1.5 border-l border-ink/15 px-3 transition-colors hover:bg-ink hover:text-paper md:px-5"
+              className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
             >
-              <span className="hidden font-mono text-[9px] text-ink/40 transition-colors group-hover/link:text-paper/50 sm:inline">
-                01
-              </span>
               <span className="text-xs font-medium tracking-[0.15em] uppercase">
                 Fonts
-              </span>
-              <span className="ml-0.5 font-mono text-[8px] text-ink/30 group-hover/link:text-paper/40">
-                {typefaces.length}
               </span>
             </Link>
 
@@ -51,27 +45,18 @@ export function Nav() {
                   Categories
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  <Link
-                    href="/fonts"
-                    className={chipBase}
-                  >
+                  <Link href="/fonts" className={chipBase}>
                     All
                   </Link>
-                  {CATEGORIES.map((cat) => {
-                    const count = typefaces.filter(
-                      (t) => t.category === cat,
-                    ).length;
-                    return (
+                  {CATEGORIES.map((cat) => (
                       <Link
                         key={cat}
                         href={`/fonts?cat=${cat}`}
                         className={chipBase}
                       >
-                        {cat}{" "}
-                        <span className="ml-1 text-paper/30">{count}</span>
+                        {cat}
                       </Link>
-                    );
-                  })}
+                  ))}
                 </div>
 
                 <div className="my-4 border-t border-paper/15" />
@@ -98,20 +83,15 @@ export function Nav() {
             <Link
               key={link.href}
               href={link.href}
-              className="group flex items-baseline gap-1.5 border-l border-ink/15 px-3 py-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
+              className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
             >
-              <span className="hidden font-mono text-[9px] text-ink/40 transition-colors group-hover:text-paper/50 sm:inline">
-                {link.index}
-              </span>
               <span className="text-xs font-medium tracking-[0.15em] uppercase">
                 {link.label}
               </span>
             </Link>
           ))}
 
-          <div className="border-l border-ink/15">
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
         </nav>
       </div>
     </header>
