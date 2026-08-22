@@ -4,11 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpRight, Search, X } from "lucide-react";
-import { formatPrice, type Category, type Typeface } from "@/lib/typefaces";
+import {
+  formatPrice,
+  CATEGORIES,
+  type Category,
+  type Typeface,
+} from "@/lib/typefaces";
+import { fontFamilyStyle } from "@/lib/product-fonts";
 
-export type IndexItem = Typeface & { fontVar: string };
-
-function Row({ font }: { font: IndexItem }) {
+function Row({ font }: { font: Typeface }) {
   return (
     <Link
       href={`/fonts/${font.slug}`}
@@ -16,7 +20,7 @@ function Row({ font }: { font: IndexItem }) {
     >
       <span
         className="col-span-12 truncate text-3xl leading-none transition-transform duration-200 group-hover:translate-x-2 sm:col-span-5 md:text-4xl"
-        style={{ fontFamily: `var(${font.fontVar})` }}
+        style={fontFamilyStyle(font.slug)}
       >
         {font.name}
       </span>
@@ -39,12 +43,10 @@ function Row({ font }: { font: IndexItem }) {
   );
 }
 
-const CATEGORIES: Category[] = ["sans", "serif", "display", "mono", "script"];
-
 export function FontIndex({
   items,
 }: {
-  items: IndexItem[];
+  items: Typeface[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();

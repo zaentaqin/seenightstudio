@@ -11,12 +11,12 @@ import {
 } from "next/font/google";
 
 /* UI system fonts */
-export const spaceGrotesk = Space_Grotesk({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
 });
 
-export const jetBrainsMono = JetBrains_Mono({
+const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
 });
@@ -134,7 +134,24 @@ export const productFonts: Record<string, ProductFont> = {
   },
 };
 
+/** Weight axis position → human-readable style name. */
+export const WEIGHT_NAMES: Record<number, string> = {
+  100: "Thin",
+  200: "ExtraLight",
+  300: "Light",
+  400: "Regular",
+  500: "Medium",
+  600: "SemiBold",
+  700: "Bold",
+  800: "ExtraBold",
+  900: "Black",
+};
+
+/** CSS custom property holding the family for a slug, with UI-font fallback. */
+export function cssVarFor(slug: string): string {
+  return productFonts[slug]?.cssVar ?? "--font-space-grotesk";
+}
+
 export function fontFamilyStyle(slug: string): React.CSSProperties {
-  const font = productFonts[slug];
-  return { fontFamily: `var(${font?.cssVar ?? "--font-space-grotesk"})` };
+  return { fontFamily: `var(${cssVarFor(slug)})` };
 }

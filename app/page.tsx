@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { featuredTypefaces, formatPrice } from "@/lib/typefaces";
 import { fontFamilyStyle } from "@/lib/product-fonts";
 import { Marquee } from "@/components/marquee";
+import { PageBar, SectionHeading } from "@/components/ui";
 
 const services = [
   {
@@ -29,12 +30,12 @@ export default function Home() {
     <>
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/15 py-4 font-mono text-[10px] tracking-[0.2em] uppercase">
+        <PageBar subtle>
           <span>Independent type foundry</span>
           <span className="hidden md:inline">Est. 2019</span>
           <span className="hidden sm:inline">Jakarta — GMT+7</span>
           <span className="text-accent">Open for custom work</span>
-        </div>
+        </PageBar>
 
         <div className="grid grid-cols-1 gap-10 py-10 md:py-16 lg:grid-cols-12">
           <h1 className="leading-[0.82] font-bold tracking-tighter uppercase select-none lg:col-span-9 [font-size:clamp(4.5rem,17vw,17rem)]">
@@ -117,9 +118,7 @@ export default function Home() {
 
       {/* ── Manifesto teaser ─────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div className="border-b border-ink py-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          02 / The Studio
-        </div>
+        <SectionHeading className="py-4">02 / The Studio</SectionHeading>
         <div className="grid grid-cols-1 gap-10 py-16 md:py-24 lg:grid-cols-12">
           <p className="lg:col-span-8 leading-[1.02] font-bold tracking-tight uppercase [font-size:clamp(2rem,5.5vw,5rem)]">
             We draw letters{" "}
@@ -145,9 +144,7 @@ export default function Home() {
 
       {/* ── Services ─────────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
-        <div className="border-b border-ink py-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          03 / What we do
-        </div>
+        <SectionHeading className="py-4">03 / What we do</SectionHeading>
         <div className="border-x border-b border-ink/15">
           {services.map((s) => (
             <Link

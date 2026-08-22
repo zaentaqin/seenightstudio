@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageBar, SectionHeading } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -29,11 +30,11 @@ export default function ContactPage() {
   return (
     <>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink py-4 font-mono text-[10px] tracking-[0.2em] uppercase">
+        <PageBar>
           <span>Contact</span>
           <span>Replies within one business night</span>
           <span className="hidden sm:inline">GMT+7</span>
-        </div>
+        </PageBar>
       </section>
 
       {/* Giant email as hero object */}
@@ -54,9 +55,7 @@ export default function ContactPage() {
       {/* Info + form */}
       <section className="mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-4 pb-24 md:px-8 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <h2 className="mb-8 border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-            01 / Channels
-          </h2>
+          <SectionHeading className="mb-8">01 / Channels</SectionHeading>
           <dl className="divide-y divide-ink/15 border-b border-ink/15">
             {channels.map((c) => (
               <div key={c.label} className="py-4">
@@ -104,9 +103,7 @@ export default function ContactPage() {
           encType="text/plain"
           className="lg:col-span-6 lg:col-start-7"
         >
-          <h2 className="mb-8 border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-            02 / Write to us
-          </h2>
+          <SectionHeading className="mb-8">02 / Write to us</SectionHeading>
 
           <div className="space-y-6">
             {[

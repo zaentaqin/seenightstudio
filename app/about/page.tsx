@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { PageBar, SectionHeading } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "About",
@@ -50,11 +51,11 @@ export default function AboutPage() {
   return (
     <>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink py-4 font-mono text-[10px] tracking-[0.2em] uppercase">
+        <PageBar>
           <span>About</span>
           <span>Independent since 2019</span>
           <span className="hidden sm:inline">Jakarta, Indonesia</span>
-        </div>
+        </PageBar>
 
         {/* Manifesto */}
         <h1 className="py-16 leading-[1.02] font-bold tracking-tight uppercase [font-size:clamp(2.25rem,6.5vw,6.5rem)] md:py-24">
@@ -66,9 +67,7 @@ export default function AboutPage() {
 
       {/* Values */}
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          01 / What we believe
-        </h2>
+        <SectionHeading>01 / What we believe</SectionHeading>
         <div className="border-x border-b border-ink/15">
           {values.map((v) => (
             <div
@@ -91,9 +90,7 @@ export default function AboutPage() {
 
       {/* Team */}
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          02 / The night shift
-        </h2>
+        <SectionHeading>02 / The night shift</SectionHeading>
         <div className="grid grid-cols-1 gap-px border-x border-b border-ink/15 bg-ink/15 sm:grid-cols-3">
           {team.map((member) => (
             <div key={member.name} className="bg-paper p-8">
@@ -116,9 +113,7 @@ export default function AboutPage() {
 
       {/* Clients + CTA */}
       <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          03 / Seen in
-        </h2>
+        <SectionHeading>03 / Seen in</SectionHeading>
         <ul className="grid grid-cols-1 divide-y divide-ink/15 border-b border-ink/15 sm:grid-cols-2 lg:grid-cols-3">
           {clients.map((client) => (
             <li

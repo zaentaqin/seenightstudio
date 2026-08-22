@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { typefaces } from "@/lib/typefaces";
-import { productFonts } from "@/lib/product-fonts";
 import { FontIndex } from "@/components/font-index";
+import { PageBar } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Fonts",
@@ -11,19 +11,14 @@ export const metadata: Metadata = {
 };
 
 export default function FontsPage() {
-  const items = typefaces.map((t) => ({
-    ...t,
-    fontVar: productFonts[t.slug]?.cssVar ?? "--font-space-grotesk",
-  }));
-
   return (
     <>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink py-4 font-mono text-[10px] tracking-[0.2em] uppercase">
+        <PageBar>
           <span>Index</span>
           <span>{typefaces.length} retail typefaces</span>
           <span className="hidden md:inline">Prices in USD</span>
-        </div>
+        </PageBar>
       </section>
 
       <Suspense
@@ -33,7 +28,7 @@ export default function FontsPage() {
           </div>
         }
       >
-        <FontIndex items={items} />
+        <FontIndex items={typefaces} />
       </Suspense>
     </>
   );

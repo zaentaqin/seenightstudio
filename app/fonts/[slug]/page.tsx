@@ -11,9 +11,12 @@ import {
 import {
   fontFamilyStyle,
   productFonts,
+  WEIGHT_NAMES,
+  cssVarFor,
 } from "@/lib/product-fonts";
-import { TypeTester, WEIGHT_NAMES } from "@/components/type-tester";
+import { TypeTester } from "@/components/type-tester";
 import { GlyphTester } from "@/components/glyph-tester";
+import { SectionHeading } from "@/components/ui";
 
 export function generateStaticParams() {
   return typefaces.map((t) => ({ slug: t.slug }));
@@ -87,11 +90,9 @@ export default async function TypefacePage({
 
       {/* ── Live tester ──────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 pt-16 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          01 / Try it live
-        </h2>
+        <SectionHeading>01 / Try it live</SectionHeading>
         <TypeTester
-          fontVar={meta?.cssVar ?? "--font-space-grotesk"}
+          fontVar={cssVarFor(slug)}
           initialText="The night is long; the type is patient."
           weightRange={meta?.weightRange}
           defaultWeight={meta?.defaultWeight ?? 400}
@@ -102,18 +103,14 @@ export default async function TypefacePage({
       {/* ── About the face + specs ───────────────────────── */}
       <section className="mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-4 py-16 md:px-8 lg:grid-cols-12 lg:py-24">
         <div className="lg:col-span-7">
-          <h2 className="mb-8 border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-            02 / About the face
-          </h2>
+          <SectionHeading className="mb-8">02 / About the face</SectionHeading>
           <p className="max-w-xl text-xl leading-relaxed font-medium md:text-2xl">
             {font.description}
           </p>
         </div>
 
         <div className="lg:col-span-4 lg:col-start-9">
-          <h2 className="mb-8 border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-            03 / Specs
-          </h2>
+          <SectionHeading className="mb-8">03 / Specs</SectionHeading>
           <dl className="divide-y divide-ink/15 border-y border-ink/15">
             {[
               ["Designer", font.designer],
@@ -155,9 +152,7 @@ export default async function TypefacePage({
 
       {/* ── Styles ───────────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          04 / Styles
-        </h2>
+        <SectionHeading>04 / Styles</SectionHeading>
         <div className="grid grid-cols-2 gap-px border-x border-b border-ink/15 bg-ink/15 sm:grid-cols-3 lg:grid-cols-5">
           {styles.map((style, i) => (
             <Link
@@ -184,17 +179,13 @@ export default async function TypefacePage({
 
       {/* ── Glyph grid ───────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          05 / Glyphs — partial set
-        </h2>
-        <GlyphTester fontVar={meta?.cssVar ?? "--font-space-grotesk"} />
+        <SectionHeading>05 / Glyphs — partial set</SectionHeading>
+        <GlyphTester fontVar={cssVarFor(slug)} />
       </section>
 
       {/* ── Licensing ────────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
-        <h2 className="border-b border-ink pb-4 font-mono text-[10px] tracking-[0.25em] uppercase">
-          06 / Licensing
-        </h2>
+        <SectionHeading>06 / Licensing</SectionHeading>
         <div className="border-x border-b border-ink/15">
           {[
             {

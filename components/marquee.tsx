@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatPrice, typefaces } from "@/lib/typefaces";
 
-export function Marquee({ reverse = false }: { reverse?: boolean }) {
+export function Marquee() {
   const items = typefaces.map(
     (t) => `${t.name.toUpperCase()} — ${formatPrice(t.price)}`,
   );
@@ -10,9 +10,7 @@ export function Marquee({ reverse = false }: { reverse?: boolean }) {
 
   return (
     <div className="marquee-paused overflow-hidden border-y border-ink bg-ink text-paper">
-      <div
-        className={`animate-marquee flex w-max items-center ${reverse ? "marquee-reverse" : ""}`}
-      >
+      <div className="animate-marquee flex w-max items-center">
         {loop.map((item, i) => (
           <Link
             key={`${item}-${i}`}

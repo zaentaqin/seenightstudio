@@ -1,5 +1,14 @@
 export type Category = "display" | "sans" | "serif" | "mono" | "script";
 
+/** Display order used by the nav flyout and the font index grouping. */
+export const CATEGORIES: Category[] = [
+  "sans",
+  "serif",
+  "display",
+  "mono",
+  "script",
+];
+
 export type Typeface = {
   slug: string;
   name: string;
@@ -130,8 +139,12 @@ export function allTags(): string[] {
   return [...new Set(typefaces.flatMap((t) => t.tags))].sort();
 }
 
+function slugIndex(slug: string): number {
+  return typefaces.findIndex((t) => t.slug === slug);
+}
+
 export function getTypeface(slug: string): Typeface | undefined {
-  return typefaces.find((t) => t.slug === slug);
+  return typefaces[slugIndex(slug)];
 }
 
 export function featuredTypefaces(): Typeface[] {
@@ -143,7 +156,8 @@ export function neighbors(slug: string): {
   next: Typeface;
 } {
   const len = typefaces.length;
-  const i = Math.max(0, typefaces.findIndex((t) => t.slug === slug));
+  // Callers resolve the slug first, so clamp unknown slugs to the head.
+  const i = Math.max(0, slugIndex(slug));
   return {
     prev: typefaces[(i - 1 + len) % len],
     next: typefaces[(i + 1) % len],

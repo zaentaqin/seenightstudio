@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { allTags, type Category } from "@/lib/typefaces";
+import { allTags, CATEGORIES } from "@/lib/typefaces";
 
 const navLinks = [
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 
-const CATEGORIES: Category[] = ["sans", "serif", "display", "mono", "script"];
 const tags = allTags();
 
 const chipBase =
