@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { allTags, typefaces } from "@/lib/typefaces";
+import { typefaces } from "@/lib/typefaces";
 import { productFonts } from "@/lib/product-fonts";
 import { FontIndex } from "@/components/font-index";
 
@@ -33,7 +33,7 @@ export default function FontsPage() {
           </div>
         }
       >
-        <FontIndex items={items} tags={allTags()} />
+        <FontIndex items={items} />
       </Suspense>
     </>
   );

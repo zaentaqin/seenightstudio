@@ -8,8 +8,6 @@ import { formatPrice, type Category, type Typeface } from "@/lib/typefaces";
 
 export type IndexItem = Typeface & { fontVar: string };
 
-const CATEGORIES: Category[] = ["sans", "serif", "display", "mono", "script"];
-
 function Row({ font, index }: { font: IndexItem; index: number }) {
   return (
     <Link
@@ -45,15 +43,12 @@ function Row({ font, index }: { font: IndexItem; index: number }) {
   );
 }
 
-const chipBase =
-  "border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors";
+const CATEGORIES: Category[] = ["sans", "serif", "display", "mono", "script"];
 
 export function FontIndex({
   items,
-  tags,
 }: {
   items: IndexItem[];
-  tags: string[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -66,7 +61,6 @@ export function FontIndex({
     (searchParams.get("tag")?.split(",").filter(Boolean) ?? []),
   );
 
-  // Back/forward buttons → sync state from URL
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
@@ -78,7 +72,6 @@ export function FontIndex({
     setActiveTags(searchParams.get("tag")?.split(",").filter(Boolean) ?? []);
   }, [searchParams]);
 
-  // State → URL (debounced so typing stays smooth)
   const firstRender = useRef(true);
   useEffect(() => {
     if (firstRender.current) {
@@ -136,150 +129,91 @@ export function FontIndex({
     setActiveTags([]);
   };
 
-  const toggleTag = (tag: string) =>
-    setActiveTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
-
   return (
     <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-        {/* ── Sidebar ─────────────────────────────────── */}
-        <aside className="lg:col-span-3 lg:sticky lg:top-14 lg:self-start">
-          {/* Search */}
-          <label className="flex items-center gap-3 border-b border-ink/25 pb-4">
-            <Search className="h-4 w-4 shrink-0 text-ink/40" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search…"
-              aria-label="Search typefaces"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-ink/30"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="text-ink/40 transition-colors hover:text-accent"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </label>
+      {/* ── Search bar ─────────────────────────────────── */}
+      <div className="flex items-center gap-4 border-b border-ink py-4">
+        <label className="flex flex-1 items-center gap-3">
+          <Search className="h-4 w-4 shrink-0 text-ink/40" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search name, designer, tagline…"
+            aria-label="Search typefaces"
+            className="w-full bg-transparent text-sm outline-none placeholder:text-ink/30"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="text-ink/40 transition-colors hover:text-accent"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </label>
 
-          {/* Categories */}
-          <div className="mt-5">
-            <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
-              Type
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {(["all", ...CATEGORIES] as const).map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategory(cat)}
-                  aria-pressed={category === cat}
-                  className={`${chipBase} ${
-                    category === cat
-                      ? "border-ink bg-ink text-paper"
-                      : "border-ink/25 hover:border-ink"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="mt-5">
-            <p className="mb-3 font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
-              Tags
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  aria-pressed={activeTags.includes(tag)}
-                  className={`${chipBase} ${
-                    activeTags.includes(tag)
-                      ? "border-accent bg-accent text-paper"
-                      : "border-ink/25 hover:border-ink"
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Meta + Clear */}
-          <div className="mt-6 flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.2em] uppercase">
-            <span>
-              <span className="text-accent">{filtered.length}</span> of{" "}
-              {items.length}
-            </span>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={clearAll}
-                className="inline-flex items-center gap-1 transition-colors hover:text-accent"
-              >
-                Clear
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </div>
-        </aside>
-
-        {/* ── Results ─────────────────────────────────── */}
-        <div className="lg:col-span-9">
-          <div className="border-t border-ink">
-            {groups.length === 0 ? (
-              <div className="flex min-h-[320px] flex-col items-center justify-center gap-6 border border-ink/25 p-10 text-center">
-                <p className="text-3xl font-bold tracking-tight uppercase md:text-5xl">
-                  Nothing found
-                  <span className="text-outline"> in the dark</span>
-                </p>
-                <p className="max-w-sm text-sm text-ink/60">
-                  No typeface matches that combination. Loosen the search, or
-                  start over.
-                </p>
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="border border-ink px-5 py-3 text-xs font-medium tracking-[0.2em] uppercase transition-colors hover:bg-ink hover:text-paper"
-                >
-                  Reset →
-                </button>
-              </div>
-            ) : (
-              groups.map((group) => (
-                <div key={group.cat}>
-                  <div className="flex items-baseline justify-between border-b border-ink bg-ink px-4 py-2.5 text-paper md:px-8">
-                    <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase">
-                      {group.cat}
-                    </h2>
-                    <span className="font-mono text-[10px] text-paper/50">
-                      {group.fonts.length}
-                    </span>
-                  </div>
-                  {group.fonts.map((font, i) => (
-                    <Row
-                      key={font.slug}
-                      font={font}
-                      index={group.offset + i + 1}
-                    />
-                  ))}
-                </div>
-              ))
-            )}
-          </div>
+        <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] uppercase">
+          <span>
+            <span className="text-accent">{filtered.length}</span> /{" "}
+            {items.length}
+          </span>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={clearAll}
+              className="inline-flex items-center gap-1 transition-colors hover:text-accent"
+            >
+              Clear
+              <X className="h-3 w-3" />
+            </button>
+          )}
         </div>
+      </div>
+
+      {/* ── Results ─────────────────────────────────────── */}
+      <div className="border-t border-ink">
+        {groups.length === 0 ? (
+          <div className="flex min-h-[320px] flex-col items-center justify-center gap-6 border border-ink/25 p-10 text-center">
+            <p className="text-3xl font-bold tracking-tight uppercase md:text-5xl">
+              Nothing found
+              <span className="text-outline"> in the dark</span>
+            </p>
+            <p className="max-w-sm text-sm text-ink/60">
+              No typeface matches that combination. Loosen the search, or start
+              over.
+            </p>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="border border-ink px-5 py-3 text-xs font-medium tracking-[0.2em] uppercase transition-colors hover:bg-ink hover:text-paper"
+            >
+              Reset →
+            </button>
+          </div>
+        ) : (
+          groups.map((group) => (
+            <div key={group.cat}>
+              <div className="flex items-baseline justify-between border-b border-ink bg-ink px-4 py-2.5 text-paper md:px-8">
+                <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase">
+                  {group.cat}
+                </h2>
+                <span className="font-mono text-[10px] text-paper/50">
+                  {group.fonts.length}
+                </span>
+              </div>
+              {group.fonts.map((font, i) => (
+                <Row
+                  key={font.slug}
+                  font={font}
+                  index={group.offset + i + 1}
+                />
+              ))}
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { allTags, typefaces, type Category } from "@/lib/typefaces";
 
-const links = [
-  { index: "01", label: "Fonts", href: "/fonts" },
-  { index: "02", label: "About", href: "/about" },
-  { index: "03", label: "Contact", href: "/contact" },
+const navLinks = [
+  { index: "01", label: "About", href: "/about" },
+  { index: "02", label: "Contact", href: "/contact" },
 ];
+
+const CATEGORIES: Category[] = ["sans", "serif", "display", "mono", "script"];
+const tags = allTags();
+
+const chipBase =
+  "border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors border-paper/25 hover:border-paper hover:bg-paper hover:text-ink";
 
 export function Nav() {
   return (
@@ -20,12 +26,79 @@ export function Nav() {
           <sup className="font-mono text-[9px] tracking-normal">®</sup>
         </Link>
 
-        <nav className="flex items-center">
-          {links.map((link) => (
+        <nav className="flex items-stretch">
+          {/* Fonts flyout trigger */}
+          <div className="group/link relative">
+            <Link
+              href="/fonts"
+              className="flex h-full items-baseline gap-1.5 border-l border-ink/15 px-3 transition-colors hover:bg-ink hover:text-paper md:px-5"
+            >
+              <span className="hidden font-mono text-[9px] text-ink/40 transition-colors group-hover/link:text-paper/50 sm:inline">
+                01
+              </span>
+              <span className="text-xs font-medium tracking-[0.15em] uppercase">
+                Fonts
+              </span>
+              <span className="ml-0.5 font-mono text-[8px] text-ink/30 group-hover/link:text-paper/40">
+                {typefaces.length}
+              </span>
+            </Link>
+
+            {/* Flyout panel */}
+            <div className="invisible absolute right-0 top-full w-screen max-w-[600px] translate-y-px opacity-0 transition-none group-hover/link:visible group-hover/link:opacity-100">
+              <div className="border border-ink/15 bg-ink p-5 text-paper shadow-2xl md:p-6">
+                <p className="mb-4 font-mono text-[10px] tracking-[0.25em] text-paper/40 uppercase">
+                  Categories
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  <Link
+                    href="/fonts"
+                    className={chipBase}
+                  >
+                    All
+                  </Link>
+                  {CATEGORIES.map((cat) => {
+                    const count = typefaces.filter(
+                      (t) => t.category === cat,
+                    ).length;
+                    return (
+                      <Link
+                        key={cat}
+                        href={`/fonts?cat=${cat}`}
+                        className={chipBase}
+                      >
+                        {cat}{" "}
+                        <span className="ml-1 text-paper/30">{count}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="my-4 border-t border-paper/15" />
+
+                <p className="mb-4 font-mono text-[10px] tracking-[0.25em] text-paper/40 uppercase">
+                  Tags
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag) => (
+                    <Link
+                      key={tag}
+                      href={`/fonts?tag=${tag}`}
+                      className={chipBase}
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="group flex items-baseline gap-1.5 border-l border-ink/15 px-3 py-4 transition-colors first:border-l-0 hover:bg-ink hover:text-paper md:px-5"
+              className="group flex items-baseline gap-1.5 border-l border-ink/15 px-3 py-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
             >
               <span className="hidden font-mono text-[9px] text-ink/40 transition-colors group-hover:text-paper/50 sm:inline">
                 {link.index}
