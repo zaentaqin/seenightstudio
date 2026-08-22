@@ -1,98 +1,233 @@
+"use client";
+
+import { useSyncExternalStore, useState } from "react";
 import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import { allTags, CATEGORIES } from "@/lib/typefaces";
 
 const navLinks = [
+  { label: "Fonts", href: "/fonts" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 
 const tags = allTags();
 
+// Theme-aware — follows light/dark automatically
 const chipBase =
-  "border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors border-paper/25 hover:border-paper hover:bg-paper hover:text-ink";
+  "border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors border-ink/25 hover:border-ink hover:bg-ink hover:text-paper";
+
+function subscribe(callback: () => void) {
+  window.addEventListener("theme-change", callback);
+  return () => window.removeEventListener("theme-change", callback);
+}
+
+function getSnapshot() {
+  return document.documentElement.classList.contains("dark");
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+function ThemeToggleInline({ className = "" }: { className?: string }) {
+  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  const toggle = () => {
+    const next = !document.documentElement.classList.contains("dark");
+    localStorage.setItem("theme", next ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", next);
+    window.dispatchEvent(new Event("theme-change"));
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      className={className}
+    >
+      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </button>
+  );
+}
+
+function FilterChips({ onNavigate }: { onNavigate: () => void }) {
+  return (
+    <>
+      <p className="mb-3 font-mono text-[10px] tracking-[0.25em] text-ink/40 uppercase">
+        Categories
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        <Link href="/fonts" className={chipBase} onClick={onNavigate}>
+          All
+        </Link>
+        {CATEGORIES.map((cat) => (
+          <Link
+            key={cat}
+            href={`/fonts?cat=${cat}`}
+            className={chipBase}
+            onClick={onNavigate}
+          >
+            {cat}
+          </Link>
+        ))}
+      </div>
+
+      <div className="my-4 border-t border-ink/15" />
+
+      <p className="mb-3 font-mono text-[10px] tracking-[0.25em] text-ink/40 uppercase">
+        Tags
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {tags.map((tag) => (
+          <Link
+            key={tag}
+            href={`/fonts?tag=${tag}`}
+            className={chipBase}
+            onClick={onNavigate}
+          >
+            {tag}
+          </Link>
+        ))}
+      </div>
+    </>
+  );
+}
 
 export function Nav() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/15 bg-paper/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-[1600px] items-stretch justify-between px-4 md:px-8">
-        <Link
-          href="/"
-          className="group flex items-center gap-2 py-4 text-base font-bold tracking-tighter uppercase"
-        >
-          <span className="inline-block h-2.5 w-2.5 bg-accent transition-transform group-hover:rotate-45" />
-          See Night
-          <sup className="font-mono text-[9px] tracking-normal">®</sup>
-        </Link>
+    <>
+      <header className="sticky top-0 z-50 border-b border-ink/15 bg-paper/95 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-[1600px] items-stretch justify-between px-4 md:px-8">
+          <Link
+            href="/"
+            className="group flex items-center gap-2 py-4 text-base font-bold tracking-tighter uppercase"
+          >
+            <span className="inline-block h-2.5 w-2.5 bg-accent transition-transform group-hover:rotate-45" />
+            See Night
+            <sup className="font-mono text-[9px] tracking-normal">®</sup>
+          </Link>
 
-        <nav className="flex items-stretch">
-          {/* Fonts flyout trigger */}
-          <div className="group/link relative">
-            <Link
-              href="/fonts"
-              className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
+          {/* Right side: theme toggle + hamburger (mobile) / full nav (desktop) */}
+          <div className="flex items-stretch">
+            {/* Mobile theme toggle — always visible */}
+            <ThemeToggleInline className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:hidden" />
+
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="flex items-center border-l border-ink/15 px-4 md:hidden"
+              aria-label="Open menu"
             >
-              <span className="text-xs font-medium tracking-[0.15em] uppercase">
-                Fonts
-              </span>
-            </Link>
+              <Menu className="h-5 w-5" />
+            </button>
 
-            {/* Flyout panel */}
-            <div className="invisible absolute right-0 top-full w-screen max-w-[600px] translate-y-px opacity-0 transition-none group-hover/link:visible group-hover/link:opacity-100">
-              <div className="border border-ink/15 bg-ink p-5 text-paper shadow-2xl md:p-6">
-                <p className="mb-4 font-mono text-[10px] tracking-[0.25em] text-paper/40 uppercase">
-                  Categories
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  <Link href="/fonts" className={chipBase}>
-                    All
-                  </Link>
-                  {CATEGORIES.map((cat) => (
-                      <Link
-                        key={cat}
-                        href={`/fonts?cat=${cat}`}
-                        className={chipBase}
-                      >
-                        {cat}
-                      </Link>
-                  ))}
-                </div>
+            {/* Desktop nav */}
+            <nav className="hidden items-stretch md:flex">
+              <div className="group/link relative">
+                <Link
+                  href="/fonts"
+                  className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
+                >
+                  <span className="text-xs font-medium tracking-[0.15em] uppercase">
+                    Fonts
+                  </span>
+                </Link>
 
-                <div className="my-4 border-t border-paper/15" />
-
-                <p className="mb-4 font-mono text-[10px] tracking-[0.25em] text-paper/40 uppercase">
-                  Tags
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {tags.map((tag) => (
-                    <Link
-                      key={tag}
-                      href={`/fonts?tag=${tag}`}
-                      className={chipBase}
-                    >
-                      {tag}
-                    </Link>
-                  ))}
+                {/* Flyout — theme-aware surface */}
+                <div className="invisible absolute right-0 top-full z-[60] w-screen max-w-[600px] translate-y-px opacity-0 transition-none group-hover/link:visible group-hover/link:opacity-100">
+                  <div className="border border-ink/15 bg-paper p-5 shadow-2xl md:p-6">
+                    <FilterChips onNavigate={() => {}} />
+                  </div>
                 </div>
               </div>
-            </div>
+
+              {navLinks.slice(1).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
+                >
+                  <span className="text-xs font-medium tracking-[0.15em] uppercase">
+                    {link.label}
+                  </span>
+                </Link>
+              ))}
+
+              <ThemeToggleInline className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5" />
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile overlay — theme-aware */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[100] flex flex-col bg-paper text-ink md:hidden">
+          {/* Header */}
+          <div className="flex items-stretch justify-between border-b border-ink/15 px-4">
+            <Link
+              href="/"
+              className="group flex items-center gap-2 py-4 text-base font-bold tracking-tighter uppercase"
+              onClick={() => setMobileOpen(false)}
+            >
+              <span className="inline-block h-2.5 w-2.5 bg-accent transition-transform group-hover:rotate-45" />
+              See Night
+              <sup className="font-mono text-[9px] tracking-normal">®</sup>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center px-4"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
 
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5"
-            >
-              <span className="text-xs font-medium tracking-[0.15em] uppercase">
-                {link.label}
-              </span>
-            </Link>
-          ))}
+          <nav className="flex flex-1 flex-col overflow-y-auto border-b border-ink/15">
+            {/* Fonts + filters as its submenu */}
+            <div className="border-b border-ink/10">
+              <Link
+                href="/fonts"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center px-4 py-4 text-2xl font-bold tracking-tight uppercase transition-colors hover:bg-ink hover:text-paper"
+              >
+                Fonts
+              </Link>
+              <div className="px-4 pb-6 pt-1">
+                <FilterChips onNavigate={() => setMobileOpen(false)} />
+              </div>
+            </div>
 
-          <ThemeToggle />
-        </nav>
-      </div>
-    </header>
+            {navLinks.slice(1).map((link, i) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`flex items-center px-4 py-4 text-2xl font-bold tracking-tight uppercase transition-colors hover:bg-ink hover:text-paper ${
+                  i < navLinks.slice(1).length - 1
+                    ? "border-b border-ink/10"
+                    : ""
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Theme toggle */}
+          <div className="flex items-center px-4 py-3">
+            <ThemeToggleInline className="flex h-10 items-center gap-2 border border-ink/25 px-3 transition-colors hover:bg-ink hover:text-paper" />
+            <span className="ml-3 font-mono text-[10px] tracking-[0.25em] text-ink/40 uppercase">
+              Theme
+            </span>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

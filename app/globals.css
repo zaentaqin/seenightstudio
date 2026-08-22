@@ -88,3 +88,12 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 0;
   cursor: ew-resize;
 }
+
+/* Hide scrollbar for filter chips */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

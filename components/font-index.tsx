@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import {
+  allTags,
   formatPrice,
   CATEGORIES,
   type Category,
@@ -12,20 +13,29 @@ import {
 } from "@/lib/typefaces";
 import { fontFamilyStyle } from "@/lib/product-fonts";
 
+const allTagsList = allTags();
+
+const chipBase =
+  "whitespace-nowrap border px-2.5 py-1 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors";
+
 function Row({ font }: { font: Typeface }) {
   return (
     <Link
       href={`/fonts/${font.slug}`}
-      className="group grid grid-cols-12 items-center gap-2 border-b border-ink/15 px-4 py-6 transition-colors hover:bg-ink hover:text-paper md:px-8"
+      className="group grid grid-cols-6 items-center gap-2 border-b border-ink/15 px-4 py-5 transition-colors hover:bg-ink hover:text-paper sm:grid-cols-12 sm:px-8 sm:py-6"
     >
       <span
-        className="col-span-12 truncate text-3xl leading-none transition-transform duration-200 group-hover:translate-x-2 sm:col-span-5 md:text-4xl"
+        className="col-span-5 truncate text-2xl leading-none transition-transform duration-200 group-hover:translate-x-2 sm:col-span-5 sm:text-4xl"
         style={fontFamilyStyle(font.slug)}
       >
         {font.name}
       </span>
 
-      <span className="col-span-12 truncate text-xs text-ink/50 italic group-hover:text-paper/50 sm:col-span-4 sm:col-start-6 md:text-sm">
+      <span className="col-span-1 text-right font-mono text-xs group-hover:text-accent sm:col-span-1">
+        {formatPrice(font.price)}
+      </span>
+
+      <span className="col-span-5 truncate text-xs text-ink/50 italic group-hover:text-paper/50 sm:col-span-4 sm:col-start-6 sm:text-sm">
         {font.tagline}
       </span>
 
@@ -35,10 +45,7 @@ function Row({ font }: { font: Typeface }) {
       <span className="hidden font-mono text-[10px] tracking-[0.1em] group-hover:text-paper/60 sm:col-span-1 sm:block">
         ©{String(font.year).slice(2)}
       </span>
-      <span className="col-span-1 text-right font-mono text-xs group-hover:text-accent">
-        {formatPrice(font.price)}
-      </span>
-      <ArrowUpRight className="col-span-1 h-5 w-5 justify-self-end opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100" />
+      <ArrowUpRight className="hidden h-5 w-5 justify-self-end opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100 sm:col-span-1 sm:block" />
     </Link>
   );
 }
@@ -58,6 +65,7 @@ export function FontIndex({
   const [activeTags, setActiveTags] = useState<string[]>(() =>
     (searchParams.get("tag")?.split(",").filter(Boolean) ?? []),
   );
+  const [showTags, setShowTags] = useState(false);
 
   const mounted = useRef(false);
   useEffect(() => {
@@ -118,6 +126,12 @@ export function FontIndex({
     setActiveTags([]);
   };
 
+  const toggleTag = (tag: string) => {
+    setActiveTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  };
+
   return (
     <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
       {/* ── Search bar ─────────────────────────────────── */}
@@ -162,6 +176,66 @@ export function FontIndex({
         </div>
       </div>
 
+      {/* ── Filter chips ────────────────────────────────── */}
+      <div className="border-b border-ink/15 py-3">
+        <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => { setCategory("all"); setActiveTags([]); }}
+            className={`${chipBase} ${
+              category === "all" && !activeTags.length
+                ? "border-ink bg-ink text-paper"
+                : "border-ink/25 hover:border-ink"
+            }`}
+          >
+            All
+          </button>
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => { setCategory(cat); setActiveTags([]); }}
+              className={`${chipBase} ${
+                category === cat
+                  ? "border-ink bg-ink text-paper"
+                  : "border-ink/25 hover:border-ink"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+
+          <span className="mx-1 w-px shrink-0 self-stretch bg-ink/15" />
+
+          <button
+            type="button"
+            onClick={() => setShowTags((v) => !v)}
+            className={`${chipBase} shrink-0 border-ink/25 hover:border-ink`}
+          >
+            {showTags ? "Hide tags" : "Tags"}
+          </button>
+        </div>
+
+        {showTags && (
+          <div className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto">
+            {allTagsList.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => toggleTag(tag)}
+                className={`${chipBase} ${
+                  activeTags.includes(tag)
+                    ? "border-accent bg-accent text-paper"
+                    : "border-ink/25 hover:border-ink"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* ── Results ─────────────────────────────────────── */}
       <div className="border-t border-ink">
         {groups.length === 0 ? (
@@ -185,7 +259,7 @@ export function FontIndex({
         ) : (
           groups.map((group) => (
             <div key={group.cat}>
-              <div className="flex items-baseline justify-between border-b border-ink bg-ink px-4 py-2.5 text-paper md:px-8">
+              <div className="flex items-baseline justify-between border-b border-ink bg-ink px-4 py-2.5 text-paper sm:px-8">
                 <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase">
                   {group.cat}
                 </h2>
