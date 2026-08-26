@@ -25,7 +25,19 @@ export function TypeTester({
   const [align, setAlign] = useState<"left" | "center">("left");
   const [uppercase, setUppercase] = useState(false);
   const [italic, setItalic] = useState(false);
+  const [sizeDraft, setSizeDraft] = useState<string | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
+
+  const commitSizeDraft = () => {
+    if (sizeDraft === null) return;
+    const v = Number(sizeDraft);
+    setSize(
+      sizeDraft === "" || Number.isNaN(v)
+        ? size
+        : Math.min(220, Math.max(24, Math.round(v))),
+    );
+    setSizeDraft(null);
+  };
 
   const fitHeight = useCallback(() => {
     const el = areaRef.current;
@@ -55,9 +67,29 @@ export function TypeTester({
             className="w-32 accent-ink md:w-44"
             aria-label="Font size"
           />
-          <span className="w-12 font-mono text-[10px] tabular-nums">
-            {size}px
-          </span>
+          <input
+            type="number"
+            min={24}
+            max={220}
+            value={sizeDraft ?? size}
+            onChange={(e) => {
+              const raw = e.target.value;
+              if (raw === "" || /^\d+$/.test(raw)) {
+                setSizeDraft(raw);
+                const v = Number(raw);
+                if (raw !== "" && v >= 24 && v <= 220) {
+                  setSize(v);
+                }
+              }
+            }}
+            onBlur={commitSizeDraft}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+            }}
+            className="w-12 border border-ink/25 bg-transparent px-2 py-1 font-mono text-[10px] tabular-nums outline-none transition-colors focus:border-ink [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            aria-label="Font size value"
+          />
+          <span className="font-mono text-[10px] text-ink/50">px</span>
         </label>
 
         {weightRange && (

@@ -1,8 +1,9 @@
 "use client";
 
-import { useSyncExternalStore, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { allTags, CATEGORIES } from "@/lib/typefaces";
 
 const navLinks = [
@@ -13,44 +14,8 @@ const navLinks = [
 
 const tags = allTags();
 
-// Theme-aware — follows light/dark automatically
 const chipBase =
   "border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors border-ink/25 hover:border-ink hover:bg-ink hover:text-paper";
-
-function subscribe(callback: () => void) {
-  window.addEventListener("theme-change", callback);
-  return () => window.removeEventListener("theme-change", callback);
-}
-
-function getSnapshot() {
-  return document.documentElement.classList.contains("dark");
-}
-
-function getServerSnapshot() {
-  return false;
-}
-
-function ThemeToggleInline({ className = "" }: { className?: string }) {
-  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
-  const toggle = () => {
-    const next = !document.documentElement.classList.contains("dark");
-    localStorage.setItem("theme", next ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", next);
-    window.dispatchEvent(new Event("theme-change"));
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      className={className}
-    >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
-  );
-}
 
 function FilterChips({ onNavigate }: { onNavigate: () => void }) {
   return (
@@ -114,7 +79,7 @@ export function Nav() {
           {/* Right side: theme toggle + hamburger (mobile) / full nav (desktop) */}
           <div className="flex items-stretch">
             {/* Mobile theme toggle — always visible */}
-            <ThemeToggleInline className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:hidden" />
+            <ThemeToggle className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:hidden" />
 
             {/* Mobile hamburger */}
             <button
@@ -122,6 +87,7 @@ export function Nav() {
               onClick={() => setMobileOpen(true)}
               className="flex items-center border-l border-ink/15 px-4 md:hidden"
               aria-label="Open menu"
+              aria-expanded={mobileOpen}
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -158,13 +124,13 @@ export function Nav() {
                 </Link>
               ))}
 
-              <ThemeToggleInline className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5" />
+              <ThemeToggle className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:px-5" />
             </nav>
           </div>
         </div>
       </header>
 
-      {/* Mobile overlay — theme-aware */}
+      {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[100] flex flex-col bg-paper text-ink md:hidden">
           {/* Header */}
@@ -221,7 +187,7 @@ export function Nav() {
 
           {/* Theme toggle */}
           <div className="flex items-center px-4 py-3">
-            <ThemeToggleInline className="flex h-10 items-center gap-2 border border-ink/25 px-3 transition-colors hover:bg-ink hover:text-paper" />
+            <ThemeToggle className="flex h-10 items-center gap-2 border border-ink/25 px-3 transition-colors hover:bg-ink hover:text-paper" />
             <span className="ml-3 font-mono text-[10px] tracking-[0.25em] text-ink/40 uppercase">
               Theme
             </span>

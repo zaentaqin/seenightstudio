@@ -3,6 +3,7 @@ import "./globals.css";
 import { allFontVariables } from "@/lib/product-fonts";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
+import { CursorFollower } from "@/components/cursor-follower";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://seenight.studio"),
@@ -27,6 +28,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-paper font-sans text-ink antialiased">
+        <CursorFollower />
         <Nav />
         <main>{children}</main>
         <Footer />

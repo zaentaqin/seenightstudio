@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { PageBar, SectionHeading } from "@/components/ui";
+import { RevealSection } from "@/components/reveal-section";
 
 export const metadata: Metadata = {
   title: "About",
@@ -66,6 +67,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
+      <RevealSection>
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
         <SectionHeading>01 / What we believe</SectionHeading>
         <div className="border-x border-b border-ink/15">
@@ -87,8 +89,10 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+      </RevealSection>
 
       {/* Team */}
+      <RevealSection delay={100}>
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
         <SectionHeading>02 / The night shift</SectionHeading>
         <div className="grid grid-cols-1 gap-px border-x border-b border-ink/15 bg-ink/15 sm:grid-cols-3">
@@ -110,8 +114,10 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+      </RevealSection>
 
       {/* Clients + CTA */}
+      <RevealSection delay={200}>
       <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
         <SectionHeading>03 / Seen in</SectionHeading>
         <ul className="grid grid-cols-1 divide-y divide-ink/15 border-b border-ink/15 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,6 +144,7 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+      </RevealSection>
     </>
   );
 }

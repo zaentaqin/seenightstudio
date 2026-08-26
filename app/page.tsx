@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { featuredTypefaces, formatPrice } from "@/lib/typefaces";
 import { fontFamilyStyle } from "@/lib/product-fonts";
 import { Marquee } from "@/components/marquee";
+import { RevealSection } from "@/components/reveal-section";
 import { PageBar, SectionHeading } from "@/components/ui";
 
 const services = [
@@ -39,14 +40,16 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-10 py-10 md:py-16 lg:grid-cols-12">
           <h1 className="leading-[0.82] font-bold tracking-tighter uppercase select-none lg:col-span-9 [font-size:clamp(4.5rem,17vw,17rem)]">
-            <span className="block">See</span>
-            <span className="text-outline block">Night</span>
-            <span className="block pl-[8%]">
-              Studio
-              <sup className="align-super font-mono text-[0.14em] tracking-normal">
-                ®
-              </sup>
-            </span>
+            <div className="hero-stagger">
+              <span className="block">See</span>
+              <span className="text-outline block">Night</span>
+              <span className="block pl-[8%]">
+                Studio
+                <sup className="align-super font-mono text-[0.14em] tracking-normal">
+                  ®
+                </sup>
+              </span>
+            </div>
           </h1>
 
           <div className="flex flex-col justify-end gap-6 lg:col-span-3">
@@ -69,6 +72,7 @@ export default function Home() {
       <Marquee />
 
       {/* ── Featured typefaces ───────────────────────────── */}
+      <RevealSection>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="flex items-baseline justify-between border-b border-ink py-4">
           <h2 className="font-mono text-[10px] tracking-[0.25em] uppercase">
@@ -115,8 +119,10 @@ export default function Home() {
           ))}
         </div>
       </section>
+      </RevealSection>
 
       {/* ── Manifesto teaser ─────────────────────────────── */}
+      <RevealSection delay={100}>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
         <SectionHeading className="py-4">02 / The Studio</SectionHeading>
         <div className="grid grid-cols-1 gap-10 py-16 md:py-24 lg:grid-cols-12">
@@ -141,8 +147,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </RevealSection>
 
       {/* ── Services ─────────────────────────────────────── */}
+      <RevealSection delay={200}>
       <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
         <SectionHeading className="py-4">03 / What we do</SectionHeading>
         <div className="border-x border-b border-ink/15">
@@ -166,6 +174,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+      </RevealSection>
     </>
   );
 }

@@ -78,8 +78,9 @@ export default async function TypefacePage({
       {/* ── Hero specimen ────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] border-b border-ink/15 px-4 py-14 md:px-8 md:py-20">
         <p
-          className="text-center leading-[0.9] break-words [font-size:clamp(3rem,13vw,13rem)]"
+          className="glitch-hover text-center leading-[0.9] break-words [font-size:clamp(3rem,13vw,13rem)]"
           style={fontFamilyStyle(slug)}
+          data-text={font.name}
         >
           {font.name}
         </p>

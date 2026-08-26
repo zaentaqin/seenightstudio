@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpRight, Search, X } from "lucide-react";
+import { TextScramble } from "@/components/text-scramble";
 import {
   allTags,
   formatPrice,
@@ -24,12 +25,12 @@ function Row({ font }: { font: Typeface }) {
       href={`/fonts/${font.slug}`}
       className="group grid grid-cols-6 items-center gap-2 border-b border-ink/15 px-4 py-5 transition-colors hover:bg-ink hover:text-paper sm:grid-cols-12 sm:px-8 sm:py-6"
     >
-      <span
+      <TextScramble
+        text={font.name}
+        as="span"
         className="col-span-5 truncate text-2xl leading-none transition-transform duration-200 group-hover:translate-x-2 sm:col-span-5 sm:text-4xl"
-        style={fontFamilyStyle(font.slug)}
-      >
-        {font.name}
-      </span>
+        style={fontFamilyStyle(font.slug) as React.CSSProperties}
+      />
 
       <span className="col-span-1 text-right font-mono text-xs group-hover:text-accent sm:col-span-1">
         {formatPrice(font.price)}

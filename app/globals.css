@@ -97,3 +97,96 @@ input[type="range"]::-moz-range-thumb {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ── Hero stagger reveal ──────────────────────────────── */
+@keyframes sn-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-stagger > * {
+  opacity: 0;
+  animation: sn-reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.hero-stagger > *:nth-child(2) { animation-delay: 0.25s; }
+.hero-stagger > *:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Section scroll reveal ────────────────────────────── */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(3rem);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-section.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Glitch effect on hover ───────────────────────────── */
+.glitch-hover {
+  position: relative;
+  display: inline-block;
+}
+.glitch-hover::before,
+.glitch-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.glitch-hover::before {
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+  z-index: -1;
+}
+.glitch-hover::after {
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+  z-index: -1;
+}
+.glitch-hover:hover::before {
+  opacity: 0.8;
+  animation: sn-glitch-1 0.4s steps(2) infinite;
+}
+.glitch-hover:hover::after {
+  opacity: 0.8;
+  animation: sn-glitch-2 0.4s steps(2) infinite;
+}
+
+@keyframes sn-glitch-1 {
+  0%   { clip-path: inset(20% 0 60% 0); transform: translate(-4px, -2px); }
+  25%  { clip-path: inset(60% 0 10% 0); transform: translate(3px, 1px); }
+  50%  { clip-path: inset(40% 0 30% 0); transform: translate(-2px, 3px); }
+  75%  { clip-path: inset(10% 0 70% 0); transform: translate(4px, -1px); }
+  100% { clip-path: inset(50% 0 20% 0); transform: translate(-3px, 2px); }
+}
+
+@keyframes sn-glitch-2 {
+  0%   { clip-path: inset(70% 0 5% 0);  transform: translate(3px, 2px); }
+  25%  { clip-path: inset(15% 0 65% 0); transform: translate(-4px, -1px); }
+  50%  { clip-path: inset(55% 0 25% 0); transform: translate(2px, -3px); }
+  75%  { clip-path: inset(5% 0 80% 0);  transform: translate(-3px, 1px); }
+  100% { clip-path: inset(35% 0 45% 0); transform: translate(4px, -2px); }
+}
+
+/* ── Reduced motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation: none; }
+  .hero-stagger > * { animation: none; opacity: 1; }
+  .reveal-section { opacity: 1; transform: none; transition: none; }
+  .glitch-hover::before,
+  .glitch-hover::after { display: none; }
+}
