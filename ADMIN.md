@@ -1,0 +1,152 @@
+# Admin Dashboard
+
+## Akses
+
+URL: `/admin/login`
+
+- Password: `admin123` (default, bisa di-override via env `ADMIN_PASSWORD`)
+
+Tidak ada email — cukup masukkan password lalu klik Login.
+
+## Arsitektur Autentikasi
+
+Menggunakan **cookie-based session** sederhana (bukan Supabase Auth):
+
+1. Login → server action `login()` cek password → set cookie `admin_session` (httpOnly, 7 hari)
+2. Middleware cek cookie di semua request `/admin/*` — redirect ke `/admin/login` jika tidak ada session
+3. Logout → hapus cookie → redirect ke login
+
+**File terkait:**
+- `app/admin/actions/auth.ts` — server action `login()` + `logout()`
+- `app/admin/actions/is-admin.ts` — helper `isAdmin()` untuk cek session di layout
+- `middleware.ts` — proteksi route `/admin/*` + set header `x-pathname`
+
+## Halaman Admin
+
+### `/admin` — Dashboard
+Ringkasan jumlah typefaces, pages, dan settings di Supabase.
+
+### `/admin/typefaces` — List Semua Typeface
+- Lihat semua typefaces (dari Supabase atau fallback ke hardcoded data)
+- Klik "+" untuk tambah baru
+- Klik item untuk edit atau hapus
+
+### `/admin/typefields/new` — Tambah Typeface
+Form fields:
+- `slug` — URL identifier (unique, lowercase, no spaces)
+- `name` — Display name
+- `designer` — Nama desainer/foundry
+- `category` — Dropdown: sans, serif, display, mono, script
+- `styles` — Jumlah style variants (integer)
+- `price` — Harga dalam USD (integer)
+- `year` — Tahun rilis
+- `tagline` — Singkat, satu baris
+- `description` — Deskripsi panjang
+- `tags` — Comma-separated tags
+- `featured` — Checkbox, tampil di homepage
+
+### `/admin/typefaces/[slug]` — Edit Typeface
+Sama seperti form tambah, tapi slug tidak bisa diubah. Ada tombol Delete di bawah.
+
+### `/admin/pages` — List Pages
+Menampilkan slug dan waktu update terakhir.
+
+### `/admin/pages/[slug]` — Edit Page Content
+Textarea untuk edit JSON content. Struktur JSON per page:
+
+**home:**
+```json
+{
+  "heroBar": ["String array", "untuk ticker"],
+  "tagline": "Tagline utama",
+  "services": [{"index": "01", "title": "...", "desc": "..."}],
+  "manifestoTeaser": "Teaser singkat"
+}
+```
+
+**about:**
+```json
+{
+  "manifesto": "...",
+  "values": [{"index": "01", "title": "...", "desc": "..."}],
+  "team": [{"initials": "SN", "name": "...", "role": "..."}],
+  "clients": ["Client 1", "Client 2"]
+}
+```
+
+**contact:**
+```json
+{
+  "channels": [{"label": "...", "value": "..."}],
+  "socials": [{"label": "...", "value": "..."}],
+  "address": "Alamat newline-separated"
+}
+```
+
+### `/admin/settings` — Edit Settings
+JSON editor untuk site-wide settings. Keys yang tersedia:
+
+**footer:**
+```json
+{
+  "columns": [{"title": "...", "links": [{"label": "...", "href": "..."}]}],
+  "newsletter": "...",
+  "copyright": "...",
+  "notice": "...",
+  "location": "..."
+}
+```
+
+**nav:**
+```json
+{
+  "links": [{"label": "...", "href": "..."}]
+}
+```
+
+## Supabase Database
+
+Project: `broztftclcbnuuycdxxq` (ap-southeast-1)
+
+### Tables
+
+| Table | PK | Unique | Purpose |
+|-------|-----|--------|---------|
+| `typefaces` | uuid | slug | Data typeface/font |
+| `pages` | uuid | slug | CMS content per page |
+| `settings` | uuid | key | Key-value site config |
+
+### Environment Variables
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://broztftclcbnuuycdxxq.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_GM8JXYGwYI3yF643R2mnuA_-2tBNTo5
+ADMIN_PASSWORD=admin123  (optional, default: admin123)
+```
+
+### RLS Policies
+- **Public read** — semua tabel bisa dibaca tanpa auth
+- **Authenticated write** — insert/update/delete hanya untuk authenticated users
+
+### Fallback
+Jika Supabase tidak available, website tetap jalan menggunakan hardcoded data dari `lib/typefaces.ts` dan `lib/data.ts`.
+
+### Seed SQL
+File: `supabase/seed.sql` — berisi CREATE TABLE + INSERT seed data untuk semua tables.
+File: `supabase/create-admin.sql` — SQL untuk buat admin user di Supabase Auth (tidak dipakai, auth sekarang cookie-based).
+
+## Sidebar Navigation
+
+- Dashboard — `/admin`
+- Typeface — `/admin/typefaces`
+- Pages — `/admin/pages`
+- Settings — `/admin/settings`
+- View site — buka `/` di tab baru
+- Logout — hapus session cookie
+
+## Catatan Teknis
+
+- Admin layout terpisah dari main site (tidak ada Nav/Footer main site)
+- Header `x-pathname` di-set oleh middleware untuk membedakan admin vs public routes
+- Cookie `admin_session` bersifat httpOnly + secure (production) + sameSite lax
+- Session berlaku 7 hari

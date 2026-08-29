@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CartDrawer } from "@/components/cart-drawer";
+import { useCartStore } from "@/lib/cart-store";
 import { allTags, CATEGORIES } from "@/lib/typefaces";
 
 const navLinks = [
@@ -62,6 +64,9 @@ function FilterChips({ onNavigate }: { onNavigate: () => void }) {
 
 export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const totalItems = useCartStore((s) => s.totalItems());
+  const badge = totalItems > 0 ? totalItems : null;
 
   return (
     <>
@@ -76,8 +81,23 @@ export function Nav() {
             <sup className="font-mono text-[9px] tracking-normal">®</sup>
           </Link>
 
-          {/* Right side: theme toggle + hamburger (mobile) / full nav (desktop) */}
+          {/* Right side: cart + theme toggle + hamburger (mobile) / full nav (desktop) */}
           <div className="flex items-stretch">
+            {/* Cart button — always visible */}
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
+              className="relative flex items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper"
+              aria-label={`Open cart, ${badge ? `${badge} items` : "empty"}`}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {badge !== null && (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center bg-accent px-1 font-mono text-[9px] font-bold text-paper">
+                  {badge}
+                </span>
+              )}
+            </button>
+
             {/* Mobile theme toggle — always visible */}
             <ThemeToggle className="flex h-full items-center border-l border-ink/15 px-4 transition-colors hover:bg-ink hover:text-paper md:hidden" />
 
@@ -194,6 +214,8 @@ export function Nav() {
           </div>
         </div>
       )}
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }

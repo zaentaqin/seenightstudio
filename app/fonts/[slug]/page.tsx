@@ -2,12 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
-import {
-  formatPrice,
-  getTypeface,
-  neighbors,
-  typefaces,
-} from "@/lib/typefaces";
+import { getTypefaces, getTypefaceBySlug } from "@/lib/data";
+import { formatPrice, type Typeface } from "@/lib/typefaces";
 import {
   fontFamilyStyle,
   productFonts,
@@ -16,9 +12,11 @@ import {
 } from "@/lib/product-fonts";
 import { TypeTester } from "@/components/type-tester";
 import { GlyphTester } from "@/components/glyph-tester";
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { SectionHeading } from "@/components/ui";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const typefaces = await getTypefaces();
   return typefaces.map((t) => ({ slug: t.slug }));
 }
 
@@ -28,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const font = getTypeface(slug);
+  const font = await getTypefaceBySlug(slug);
   if (!font) return { title: "Not found" };
   return { title: font.name, description: font.tagline };
 }
@@ -43,18 +41,34 @@ function styleList(slug: string): string[] {
   return names;
 }
 
+async function getNeighbors(slug: string): Promise<{
+  prev: Typeface;
+  next: Typeface;
+}> {
+  const typefaces = await getTypefaces();
+  const len = typefaces.length;
+  const i = Math.max(
+    0,
+    typefaces.findIndex((t) => t.slug === slug),
+  );
+  return {
+    prev: typefaces[(i - 1 + len) % len],
+    next: typefaces[(i + 1) % len],
+  };
+}
+
 export default async function TypefacePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const font = getTypeface(slug);
+  const font = await getTypefaceBySlug(slug);
   if (!font) notFound();
 
   const meta = productFonts[slug];
   const styles = styleList(slug);
-  const { prev, next } = neighbors(slug);
+  const { prev, next } = await getNeighbors(slug);
   const webPrice = Math.round((font.price * 1.5) / 5) * 5;
   const appPrice = font.price * 3;
 
@@ -190,33 +204,43 @@ export default async function TypefacePage({
           {[
             {
               name: "Desktop",
+              tier: "desktop" as const,
               desc: "Logos, print, packaging. Per workstation.",
               price: formatPrice(font.price),
             },
             {
               name: "Web",
+              tier: "web" as const,
               desc: "Self-hosted WOFF2 for one domain, unlimited traffic.",
               price: formatPrice(webPrice),
             },
             {
               name: "App",
+              tier: "app" as const,
               desc: "Embedded in one mobile or desktop application title.",
               price: formatPrice(appPrice),
             },
           ].map((tier) => (
             <div
               key={tier.name}
-              className="group grid grid-cols-12 items-baseline gap-2 border-b border-ink/15 px-4 py-7 transition-colors last:border-b-0 hover:bg-ink hover:text-paper md:px-8"
+              className="group grid grid-cols-12 items-center gap-2 border-b border-ink/15 px-4 py-7 transition-colors last:border-b-0 hover:bg-ink hover:text-paper md:px-8"
             >
-              <h3 className="col-span-6 text-xl font-bold tracking-tight uppercase md:col-span-3 md:text-2xl">
+              <h3 className="col-span-5 text-xl font-bold tracking-tight uppercase md:col-span-3 md:text-2xl">
                 {tier.name}
               </h3>
-              <p className="col-span-11 col-start-2 text-sm text-ink/60 group-hover:text-paper/60 md:col-span-6 md:col-start-4">
+              <p className="col-span-11 col-start-2 text-sm text-ink/60 group-hover:text-paper/60 md:col-span-5 md:col-start-4">
                 {tier.desc}
               </p>
-              <span className="col-span-4 col-start-9 justify-self-end font-mono text-sm group-hover:text-accent md:col-span-2 md:col-start-12">
+              <span className="col-span-3 col-start-9 justify-self-end font-mono text-sm group-hover:text-accent md:col-span-2 md:col-start-10">
                 {tier.price}
               </span>
+              <div className="col-span-2 col-start-12 justify-self-end">
+                <AddToCartButton
+                  slug={slug}
+                  tier={tier.tier}
+                  fontName={font.name}
+                />
+              </div>
             </div>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPageContent } from "@/lib/data";
 import { PageBar, SectionHeading } from "@/components/ui";
 
 export const metadata: Metadata = {
@@ -7,26 +8,13 @@ export const metadata: Metadata = {
     "Talk to See Night Studio about licenses, custom typefaces, or collaborations.",
 };
 
-const channels = [
-  {
-    label: "General & licensing",
-    value: "hello@seenight.studio",
-    href: "mailto:hello@seenight.studio",
-  },
-  {
-    label: "Custom projects",
-    value: "custom@seenight.studio",
-    href: "mailto:custom@seenight.studio",
-  },
-];
+export default async function ContactPage() {
+  const contact = await getPageContent("contact");
 
-const socials = [
-  { label: "Instagram", value: "@seenightstudio" },
-  { label: "Behance", value: "/seenightstudio" },
-  { label: "X / Twitter", value: "@seenightco" },
-];
+  const channels = contact.channels ?? [];
+  const socials = contact.socials ?? [];
+  const address = contact.address ?? "";
 
-export default function ContactPage() {
   return (
     <>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
@@ -57,25 +45,27 @@ export default function ContactPage() {
         <div className="lg:col-span-5">
           <SectionHeading className="mb-8">01 / Channels</SectionHeading>
           <dl className="divide-y divide-ink/15 border-b border-ink/15">
-            {channels.map((c) => (
-              <div key={c.label} className="py-4">
-                <dt className="font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
-                  {c.label}
-                </dt>
-                <dd className="mt-1">
-                  <a
-                    href={c.href}
-                    className="text-lg font-medium underline-offset-4 hover:text-accent hover:underline"
-                  >
-                    {c.value}
-                  </a>
-                </dd>
-              </div>
-            ))}
+            {channels.map(
+              (c: { label: string; value: string; href?: string }) => (
+                <div key={c.label} className="py-4">
+                  <dt className="font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+                    {c.label}
+                  </dt>
+                  <dd className="mt-1">
+                    <a
+                      href={c.href ?? `mailto:${c.value}`}
+                      className="text-lg font-medium underline-offset-4 hover:text-accent hover:underline"
+                    >
+                      {c.value}
+                    </a>
+                  </dd>
+                </div>
+              ),
+            )}
           </dl>
 
           <dl className="mt-10 divide-y divide-ink/15 border-y border-ink/15">
-            {socials.map((s) => (
+            {socials.map((s: { label: string; value: string }) => (
               <div
                 key={s.label}
                 className="flex items-baseline justify-between py-3"
@@ -88,12 +78,8 @@ export default function ContactPage() {
             ))}
           </dl>
 
-          <p className="mt-10 max-w-xs text-sm leading-relaxed text-ink/60">
-            See Night Studio
-            <br />
-            Jl. Malam No. 13, Jakarta Selatan
-            <br />
-            Indonesia 12730
+          <p className="mt-10 max-w-xs text-sm leading-relaxed text-ink/60 whitespace-pre-line">
+            {address}
           </p>
         </div>
 

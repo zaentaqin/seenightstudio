@@ -1,31 +1,25 @@
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import { featuredTypefaces, formatPrice } from "@/lib/typefaces";
+import { getFeaturedTypefaces, getPageContent } from "@/lib/data";
+import { formatPrice } from "@/lib/typefaces";
 import { fontFamilyStyle } from "@/lib/product-fonts";
 import { Marquee } from "@/components/marquee";
 import { RevealSection } from "@/components/reveal-section";
 import { PageBar, SectionHeading } from "@/components/ui";
 
-const services = [
-  {
-    index: "01",
-    title: "Custom Typefaces",
-    desc: "Bespoke letterforms drawn for your brand alone — logotypes, wordmarks, full families.",
-  },
-  {
-    index: "02",
-    title: "Retail Licensing",
-    desc: "Desktop, web, and app licenses with terms written for humans, not lawyers.",
-  },
-  {
-    index: "03",
-    title: "Collaborations",
-    desc: "Lettering, wordmark refinements, and joint releases with designers we admire.",
-  },
-];
+export default async function Home() {
+  const [featured, homeContent] = await Promise.all([
+    getFeaturedTypefaces(),
+    getPageContent("home"),
+  ]);
 
-export default function Home() {
-  const featured = featuredTypefaces();
+  const services = homeContent.services ?? [];
+  const tagline =
+    homeContent.tagline ??
+    "Typefaces for brands that keep late hours. Drawn by hand, spaced with obsession, released when ready.";
+  const manifestoTeaser =
+    homeContent.manifestoTeaser ??
+    "We draw letters after dark — because the best curves never happen at noon.";
 
   return (
     <>
@@ -54,8 +48,7 @@ export default function Home() {
 
           <div className="flex flex-col justify-end gap-6 lg:col-span-3">
             <p className="max-w-xs text-lg leading-snug font-medium">
-              Typefaces for brands that keep late hours. Drawn by hand, spaced
-              with obsession, released when ready.
+              {tagline}
             </p>
             <Link
               href="/fonts"
@@ -133,9 +126,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col justify-end gap-6 lg:col-span-3 lg:col-start-10">
             <p className="max-w-xs text-sm leading-relaxed text-ink/70">
-              See Night Studio is an independent foundry run by three people
-              and one very loud espresso machine. We release retail families,
-              take on custom commissions, and publish our process as we go.
+              {manifestoTeaser}
             </p>
             <Link
               href="/about"
@@ -154,7 +145,7 @@ export default function Home() {
       <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
         <SectionHeading className="py-4">03 / What we do</SectionHeading>
         <div className="border-x border-b border-ink/15">
-          {services.map((s) => (
+          {services.map((s: { index: string; title: string; desc: string }) => (
             <Link
               key={s.index}
               href="/contact"

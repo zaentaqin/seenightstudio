@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { typefaces } from "@/lib/typefaces";
+import { getTypefaces } from "@/lib/data";
 import { FontIndex } from "@/components/font-index";
 import { PageBar } from "@/components/ui";
 
@@ -10,7 +10,9 @@ export const metadata: Metadata = {
     "The See Night Studio index — retail typefaces for brands that keep late hours.",
 };
 
-export default function FontsPage() {
+export default async function FontsPage() {
+  const typefaces = await getTypefaces();
+
   return (
     <>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">

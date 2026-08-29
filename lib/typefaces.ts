@@ -164,6 +164,22 @@ export function neighbors(slug: string): {
   };
 }
 
+export type LicenseTier = "desktop" | "web" | "app";
+
+export function getLicensePrice(
+  font: Typeface,
+  tier: LicenseTier,
+): number {
+  switch (tier) {
+    case "desktop":
+      return font.price;
+    case "web":
+      return Math.round((font.price * 1.5) / 5) * 5;
+    case "app":
+      return font.price * 3;
+  }
+}
+
 export function formatPrice(n: number): string {
   return `$${n}`;
 }

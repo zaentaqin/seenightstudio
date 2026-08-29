@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { getPageContent } from "@/lib/data";
 import { PageBar, SectionHeading } from "@/components/ui";
 import { RevealSection } from "@/components/reveal-section";
 
@@ -10,45 +11,16 @@ export const metadata: Metadata = {
     "See Night Studio is an independent type foundry in Jakarta drawing retail and custom typefaces for brands that keep late hours.",
 };
 
-const values = [
-  {
-    index: "01",
-    title: "Spacing is sacred",
-    desc: "We will delay a release by a month to fix a single kerning pair. Clients notice. Readers feel it even if they never know why.",
-  },
-  {
-    index: "02",
-    title: "Personality over neutrality",
-    desc: "The world has enough geometric sans. Every family we ship must have at least one detail that makes a designer smirk.",
-  },
-  {
-    index: "03",
-    title: "Drawn, then engineered",
-    desc: "Letter first, outlines second, OpenType features third — but all three, always. Beauty that breaks in InDesign is not beauty.",
-  },
-  {
-    index: "04",
-    title: "Open process",
-    desc: "Works in progress get published, rejected sketches stay visible. Type design looks like magic only when you hide the work.",
-  },
-];
+export default async function AboutPage() {
+  const about = await getPageContent("about");
 
-const team = [
-  { initials: "SN", name: "Sena Nakula", role: "Founder · Type Design" },
-  { initials: "RA", name: "Rara Adhista", role: "Partner · Display & Script" },
-  { initials: "DP", name: "Dimas Prayoga", role: "Engineer · Variable & Tooling" },
-];
+  const values = about.values ?? [];
+  const team = about.team ?? [];
+  const clients = about.clients ?? [];
+  const manifesto =
+    about.manifesto ??
+    "We are a foundry for the dark hours — drawing letters with more personality than any layout can contain.";
 
-const clients = [
-  "Midnight Records",
-  "Kopiright Coffee",
-  "Studio Larut",
-  "Bulan Journal",
-  "Nightshift FM",
-  "Pasar Seni Digital",
-];
-
-export default function AboutPage() {
   return (
     <>
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
@@ -60,9 +32,7 @@ export default function AboutPage() {
 
         {/* Manifesto */}
         <h1 className="py-16 leading-[1.02] font-bold tracking-tight uppercase [font-size:clamp(2.25rem,6.5vw,6.5rem)] md:py-24">
-          We are a foundry{" "}
-          <span className="text-outline">for the dark hours</span> — drawing
-          letters with more personality than any layout can contain.
+          {manifesto}
         </h1>
       </section>
 
@@ -71,7 +41,7 @@ export default function AboutPage() {
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
         <SectionHeading>01 / What we believe</SectionHeading>
         <div className="border-x border-b border-ink/15">
-          {values.map((v) => (
+          {values.map((v: { index: string; title: string; desc: string }) => (
             <div
               key={v.index}
               className="group grid grid-cols-12 gap-4 border-b border-ink/15 px-4 py-10 transition-colors last:border-b-0 hover:bg-ink hover:text-paper md:px-8"
@@ -96,22 +66,26 @@ export default function AboutPage() {
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
         <SectionHeading>02 / The night shift</SectionHeading>
         <div className="grid grid-cols-1 gap-px border-x border-b border-ink/15 bg-ink/15 sm:grid-cols-3">
-          {team.map((member) => (
-            <div key={member.name} className="bg-paper p-8">
-              <div
-                className="flex aspect-square items-center justify-center border border-ink/20 bg-ink text-paper select-none [font-size:clamp(4rem,8vw,7rem)]"
-                aria-hidden
-              >
-                <span className="font-bold tracking-tighter">{member.initials}</span>
+          {team.map(
+            (member: { initials: string; name: string; role: string }) => (
+              <div key={member.name} className="bg-paper p-8">
+                <div
+                  className="flex aspect-square items-center justify-center border border-ink/20 bg-ink text-paper select-none [font-size:clamp(4rem,8vw,7rem)]"
+                  aria-hidden
+                >
+                  <span className="font-bold tracking-tighter">
+                    {member.initials}
+                  </span>
+                </div>
+                <p className="mt-5 text-lg font-bold tracking-tight uppercase">
+                  {member.name}
+                </p>
+                <p className="mt-1 font-mono text-[10px] tracking-[0.15em] text-ink/50 uppercase">
+                  {member.role}
+                </p>
               </div>
-              <p className="mt-5 text-lg font-bold tracking-tight uppercase">
-                {member.name}
-              </p>
-              <p className="mt-1 font-mono text-[10px] tracking-[0.15em] text-ink/50 uppercase">
-                {member.role}
-              </p>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       </section>
       </RevealSection>
@@ -121,7 +95,7 @@ export default function AboutPage() {
       <section className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8">
         <SectionHeading>03 / Seen in</SectionHeading>
         <ul className="grid grid-cols-1 divide-y divide-ink/15 border-b border-ink/15 sm:grid-cols-2 lg:grid-cols-3">
-          {clients.map((client) => (
+          {clients.map((client: string) => (
             <li
               key={client}
               className="flex items-center justify-between py-4 text-sm font-medium"
