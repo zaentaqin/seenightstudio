@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 import { allFontVariables } from "@/lib/product-fonts";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { CursorFollower } from "@/components/cursor-follower";
 import { ToastProvider } from "@/components/toast";
+import { HideChrome } from "@/components/hide-chrome";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://seenight.studio"),
@@ -20,15 +20,6 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  let isAdmin = false;
-  try {
-    const h = await headers();
-    const pathname = h.get("x-pathname") ?? "";
-    isAdmin = pathname.startsWith("/admin");
-  } catch {
-    /* headers() unavailable — render as public page */
-  }
-
   return (
     <html lang="en" className={allFontVariables} suppressHydrationWarning>
       <head>
@@ -39,11 +30,12 @@ export default async function RootLayout({
         />
       </head>
       <body className="bg-paper font-sans text-ink antialiased">
+        <HideChrome />
         <ToastProvider>
-          {!isAdmin && <CursorFollower />}
-          {!isAdmin && <Nav />}
+          <CursorFollower />
+          <Nav />
           <main>{children}</main>
-          {!isAdmin && <Footer />}
+          <Footer />
         </ToastProvider>
       </body>
     </html>
