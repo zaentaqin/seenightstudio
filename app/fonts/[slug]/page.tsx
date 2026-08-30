@@ -6,7 +6,6 @@ import { getTypefaces, getTypefaceBySlug } from "@/lib/data";
 import { formatPrice, type Typeface } from "@/lib/typefaces";
 import {
   fontFamilyStyle,
-  productFonts,
   WEIGHT_NAMES,
   cssVarFor,
 } from "@/lib/product-fonts";
@@ -16,6 +15,19 @@ import { GlyphTester } from "@/components/glyph-tester";
 import { FontFaceLoader } from "@/components/font-face-loader";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { SectionHeading } from "@/components/ui";
+
+/** Parse a Postgres int4range string like "[100,900]" into [min, max]. */
+function parseWeightRange(
+  range: string | null | undefined,
+): [number, number] | undefined {
+  if (!range) return undefined;
+  const cleaned = range.replace(/[\[\]\(\)]/g, "");
+  const parts = cleaned.split(",").map((s) => parseInt(s.trim(), 10));
+  if (parts.length === 2 && !Number.isNaN(parts[0]) && !Number.isNaN(parts[1])) {
+    return [parts[0], parts[1]];
+  }
+  return undefined;
+}
 
 export async function generateStaticParams() {
   const typefaces = await getTypefaces();
@@ -33,11 +45,10 @@ export async function generateMetadata({
   return { title: font.name, description: font.tagline };
 }
 
-function styleList(slug: string): string[] {
-  const range = productFonts[slug]?.weightRange;
-  if (!range) return ["Regular"];
+function styleList(weightRange: [number, number] | undefined): string[] {
+  if (!weightRange) return ["Regular"];
   const names: string[] = [];
-  for (let w = range[0]; w <= range[1]; w += 100) {
+  for (let w = weightRange[0]; w <= weightRange[1]; w += 100) {
     names.push(WEIGHT_NAMES[w] ?? String(w));
   }
   return names;
@@ -68,8 +79,10 @@ export default async function TypefacePage({
   const font = await getTypefaceBySlug(slug);
   if (!font) notFound();
 
-  const meta = productFonts[slug];
-  const styles = styleList(slug);
+  const weightRange = parseWeightRange(font.weight_range);
+  const defaultWeight = font.default_weight ?? 400;
+  const hasItalic = font.has_italic ?? false;
+  const styles = styleList(weightRange);
   const { prev, next } = await getNeighbors(slug);
   const webPrice = Math.round((font.price * 1.5) / 5) * 5;
   const appPrice = font.price * 3;
@@ -114,9 +127,9 @@ export default async function TypefacePage({
           fontVar={cssVarFor(slug)}
           fontUrl={fontUrl}
           initialText="The night is long; the type is patient."
-          weightRange={meta?.weightRange}
-          defaultWeight={meta?.defaultWeight ?? 400}
-          hasItalic={meta?.hasItalic ?? false}
+          weightRange={weightRange}
+          defaultWeight={defaultWeight}
+          hasItalic={hasItalic}
         />
       </section>
 
@@ -139,7 +152,7 @@ export default async function TypefacePage({
               ["Release", String(font.year)],
               [
                 "Formats",
-                meta?.weightRange ? "Variable + Static" : "OTF · TTF · WOFF2",
+                weightRange ? "Variable + Static" : "OTF · TTF · WOFF2",
               ],
               ["From", formatPrice(font.price)],
             ].map(([label, value]) => (

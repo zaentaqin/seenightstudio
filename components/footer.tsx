@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { getSettings } from "@/lib/data";
 
-const columns = [
+type FooterLink = { label: string; href: string };
+type FooterColumn = { title: string; links: FooterLink[] };
+
+const fallbackColumns: FooterColumn[] = [
   {
     title: "Index",
     links: [
@@ -28,7 +32,18 @@ const columns = [
   },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSettings("footer");
+  const columns: FooterColumn[] = settings.columns ?? fallbackColumns;
+  const newsletter: string =
+    settings.newsletter ??
+    "New typefaces, work in progress, and the occasional rant about spacing. No spam — we are too busy kerning.";
+  const copyright: string = settings.copyright ?? "© 2026 See Night Studio";
+  const notice: string =
+    settings.notice ?? "Typefaces shown are placeholders — see CONCEPT.md";
+  const location: string =
+    settings.location ?? "Set in the dead of night, Jakarta";
+
   return (
     <footer className="border-t border-ink/15 bg-paper">
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
@@ -56,10 +71,7 @@ export function Footer() {
             <p className="mb-5 font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
               Newsletter
             </p>
-            <p className="max-w-xs text-sm text-ink/70">
-              New typefaces, work in progress, and the occasional rant about
-              spacing. No spam — we are too busy kerning.
-            </p>
+            <p className="max-w-xs text-sm text-ink/70">{newsletter}</p>
           </div>
         </div>
 
@@ -68,9 +80,9 @@ export function Footer() {
         </h2>
 
         <div className="flex flex-col gap-2 border-t border-ink/15 py-5 font-mono text-[10px] tracking-[0.15em] text-ink/50 uppercase md:flex-row md:justify-between">
-          <span>© 2026 See Night Studio</span>
-          <span>Typefaces shown are placeholders — see CONCEPT.md</span>
-          <span>Set in the dead of night, Jakarta</span>
+          <span>{copyright}</span>
+          <span>{notice}</span>
+          <span>{location}</span>
         </div>
       </div>
     </footer>

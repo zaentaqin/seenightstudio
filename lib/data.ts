@@ -63,6 +63,16 @@ export async function getFeaturedTypefaces(): Promise<Typeface[]> {
   }
 }
 
+export async function getAllTags(): Promise<string[]> {
+  const typefaces = await getTypefaces();
+  return [...new Set(typefaces.flatMap((t) => t.tags))].sort();
+}
+
+export async function getTypefaceMap(): Promise<Record<string, Typeface>> {
+  const typefaces = await getTypefaces();
+  return Object.fromEntries(typefaces.map((t) => [t.slug, t]));
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type PageContent = Record<string, any>;
 

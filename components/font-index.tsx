@@ -6,15 +6,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import { TextScramble } from "@/components/text-scramble";
 import {
-  allTags,
   formatPrice,
   CATEGORIES,
   type Category,
   type Typeface,
 } from "@/lib/typefaces";
 import { fontFamilyStyle } from "@/lib/product-fonts";
-
-const allTagsList = allTags();
 
 const chipBase =
   "whitespace-nowrap border px-2.5 py-1 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors";
@@ -53,8 +50,10 @@ function Row({ font }: { font: Typeface }) {
 
 export function FontIndex({
   items,
+  tags,
 }: {
   items: Typeface[];
+  tags: string[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -219,7 +218,7 @@ export function FontIndex({
 
         {showTags && (
           <div className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto">
-            {allTagsList.map((tag) => (
+            {tags.map((tag) => (
               <button
                 key={tag}
                 type="button"

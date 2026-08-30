@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer";
 import { CursorFollower } from "@/components/cursor-follower";
 import { ToastProvider } from "@/components/toast";
 import { HideChrome } from "@/components/hide-chrome";
+import { getSettings, getAllTags, getTypefaceMap } from "@/lib/data";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://seenight.studio"),
@@ -20,6 +21,18 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const [navSettings, tags, typefaceMap] = await Promise.all([
+    getSettings("nav"),
+    getAllTags(),
+    getTypefaceMap(),
+  ]);
+
+  const navLinks = navSettings.links ?? [
+    { label: "Fonts", href: "/fonts" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ];
+
   return (
     <html lang="en" className={allFontVariables} suppressHydrationWarning>
       <head>
@@ -33,7 +46,7 @@ export default async function RootLayout({
         <HideChrome />
         <ToastProvider>
           <CursorFollower />
-          <Nav />
+          <Nav navLinks={navLinks} tags={tags} typefaceMap={typefaceMap} />
           <main>{children}</main>
           <Footer />
         </ToastProvider>

@@ -6,20 +6,20 @@ import { Menu, X, ShoppingCart } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CartDrawer } from "@/components/cart-drawer";
 import { useCartStore } from "@/lib/cart-store";
-import { allTags, CATEGORIES } from "@/lib/typefaces";
+import { CATEGORIES, type Typeface } from "@/lib/typefaces";
 
-const navLinks = [
-  { label: "Fonts", href: "/fonts" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
-
-const tags = allTags();
+type NavLink = { label: string; href: string };
 
 const chipBase =
   "border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-colors border-ink/25 hover:border-ink hover:bg-ink hover:text-paper";
 
-function FilterChips({ onNavigate }: { onNavigate: () => void }) {
+function FilterChips({
+  tags,
+  onNavigate,
+}: {
+  tags: string[];
+  onNavigate: () => void;
+}) {
   return (
     <>
       <p className="mb-3 font-mono text-[10px] tracking-[0.25em] text-ink/40 uppercase">
@@ -62,7 +62,15 @@ function FilterChips({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-export function Nav() {
+export function Nav({
+  navLinks,
+  tags,
+  typefaceMap,
+}: {
+  navLinks: NavLink[];
+  tags: string[];
+  typefaceMap: Record<string, Typeface>;
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const totalItems = useCartStore((s) => s.totalItems());
@@ -127,7 +135,7 @@ export function Nav() {
                 {/* Flyout — theme-aware surface */}
                 <div className="invisible absolute right-0 top-full z-[60] w-screen max-w-[600px] translate-y-px opacity-0 transition-none group-hover/link:visible group-hover/link:opacity-100">
                   <div className="border border-ink/15 bg-paper p-5 shadow-2xl md:p-6">
-                    <FilterChips onNavigate={() => {}} />
+                    <FilterChips tags={tags} onNavigate={() => {}} />
                   </div>
                 </div>
               </div>
@@ -185,7 +193,7 @@ export function Nav() {
                 Fonts
               </Link>
               <div className="px-4 pb-6 pt-1">
-                <FilterChips onNavigate={() => setMobileOpen(false)} />
+                <FilterChips tags={tags} onNavigate={() => setMobileOpen(false)} />
               </div>
             </div>
 
@@ -215,7 +223,11 @@ export function Nav() {
         </div>
       )}
 
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartDrawer
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        typefaceMap={typefaceMap}
+      />
     </>
   );
 }

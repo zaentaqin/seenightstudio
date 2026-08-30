@@ -23,6 +23,12 @@ export type Typeface = {
   featured?: boolean;
   /** Storage object path for the real font file (e.g. "slug/file.otf"). */
   font_path?: string | null;
+  /** Variable weight axis bounds as Postgres int4range, e.g. "[100,900)". */
+  weight_range?: string | null;
+  /** Default weight for the type tester. */
+  default_weight?: number;
+  /** Whether the typeface has italic styles. */
+  has_italic?: boolean;
 };
 
 export const typefaces: Typeface[] = [

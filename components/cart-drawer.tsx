@@ -3,14 +3,15 @@
 import { useEffect, useRef } from "react";
 import { X, Trash2, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/cart-store";
-import { getTypeface, getLicensePrice, formatPrice } from "@/lib/typefaces";
+import { getLicensePrice, formatPrice, type Typeface } from "@/lib/typefaces";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  typefaceMap: Record<string, Typeface>;
 };
 
-export function CartDrawer({ open, onClose }: Props) {
+export function CartDrawer({ open, onClose, typefaceMap }: Props) {
   const items = useCartStore((s) => s.items);
   const removeItem = useCartStore((s) => s.removeItem);
   const clearCart = useCartStore((s) => s.clearCart);
@@ -38,7 +39,7 @@ export function CartDrawer({ open, onClose }: Props) {
   }, [open]);
 
   const total = items.reduce((sum, item) => {
-    const font = getTypeface(item.slug);
+    const font = typefaceMap[item.slug];
     return sum + (font ? getLicensePrice(font, item.tier) * item.qty : 0);
   }, 0);
 
@@ -87,7 +88,7 @@ export function CartDrawer({ open, onClose }: Props) {
           ) : (
             <ul className="space-y-4">
               {items.map((item) => {
-                const font = getTypeface(item.slug);
+                const font = typefaceMap[item.slug];
                 if (!font) return null;
                 const price = getLicensePrice(font, item.tier);
                 return (

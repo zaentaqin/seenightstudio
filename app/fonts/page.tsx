@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getTypefaces } from "@/lib/data";
+import { getTypefaces, getAllTags } from "@/lib/data";
 import { FontIndex } from "@/components/font-index";
 import { PageBar } from "@/components/ui";
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function FontsPage() {
-  const typefaces = await getTypefaces();
+  const [typefaces, tags] = await Promise.all([getTypefaces(), getAllTags()]);
 
   return (
     <>
@@ -30,7 +30,7 @@ export default async function FontsPage() {
           </div>
         }
       >
-        <FontIndex items={typefaces} />
+        <FontIndex items={typefaces} tags={tags} />
       </Suspense>
     </>
   );

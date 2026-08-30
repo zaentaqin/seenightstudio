@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { formatPrice, typefaces } from "@/lib/typefaces";
+import { formatPrice, type Typeface } from "@/lib/typefaces";
 
-export function Marquee() {
+export function Marquee({ typefaces }: { typefaces: Typeface[] }) {
   const items = typefaces.map(
     (t) => `${t.name.toUpperCase()} — ${formatPrice(t.price)}`,
   );

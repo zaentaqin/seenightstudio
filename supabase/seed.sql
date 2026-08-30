@@ -5,24 +5,30 @@
 
 -- Re-run safe migration for a pre-existing typefaces table.
 ALTER TABLE typefaces ADD COLUMN IF NOT EXISTS font_path text;
+ALTER TABLE typefaces ADD COLUMN IF NOT EXISTS weight_range int4range;
+ALTER TABLE typefaces ADD COLUMN IF NOT EXISTS default_weight integer DEFAULT 400;
+ALTER TABLE typefaces ADD COLUMN IF NOT EXISTS has_italic boolean DEFAULT false;
 
 -- TYPEFACES
 CREATE TABLE IF NOT EXISTS typefaces (
-  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  slug        text NOT NULL UNIQUE,
-  name        text NOT NULL,
-  designer    text NOT NULL,
-  category    text NOT NULL CHECK (category IN ('display', 'sans', 'serif', 'mono', 'script')),
-  styles      integer NOT NULL DEFAULT 1,
-  price       integer NOT NULL DEFAULT 0,
-  year        integer NOT NULL DEFAULT extract(year from now()),
-  tagline     text NOT NULL DEFAULT '',
-  description text NOT NULL DEFAULT '',
-  tags        text[] DEFAULT '{}',
-  featured    boolean DEFAULT false,
-  font_path   text,
-  created_at  timestamptz DEFAULT now(),
-  updated_at  timestamptz DEFAULT now()
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug            text NOT NULL UNIQUE,
+  name            text NOT NULL,
+  designer        text NOT NULL,
+  category        text NOT NULL CHECK (category IN ('display', 'sans', 'serif', 'mono', 'script')),
+  styles          integer NOT NULL DEFAULT 1,
+  price           integer NOT NULL DEFAULT 0,
+  year            integer NOT NULL DEFAULT extract(year from now()),
+  tagline         text NOT NULL DEFAULT '',
+  description     text NOT NULL DEFAULT '',
+  tags            text[] DEFAULT '{}',
+  featured        boolean DEFAULT false,
+  font_path       text,
+  weight_range    int4range,
+  default_weight  integer DEFAULT 400,
+  has_italic      boolean DEFAULT false,
+  created_at      timestamptz DEFAULT now(),
+  updated_at      timestamptz DEFAULT now()
 );
 
 ALTER TABLE typefaces ENABLE ROW LEVEL SECURITY;
@@ -77,16 +83,20 @@ CREATE POLICY "settings_delete_all" ON settings FOR DELETE TO anon, authenticate
 -- SEED DATA
 -- ============================================================
 
-INSERT INTO typefaces (slug, name, designer, category, styles, price, year, tagline, description, tags, featured)
+INSERT INTO typefaces (slug, name, designer, category, styles, price, year, tagline, description, tags, featured, weight_range, default_weight, has_italic)
 VALUES
-  ('nocturne-grotesk', 'Nocturne Grotesk', 'See Night Studio', 'sans', 18, 120, 2025, 'A workhorse sans for the dark hours.', 'Nocturne Grotesk is a nine-weight superfamily built for interfaces that never sleep.', ARRAY['variable', 'grotesk', 'ui', 'branding', 'editorial'], true),
-  ('moonfat-display', 'Moonfat', 'Rara Adhista', 'display', 1, 60, 2026, 'Fat letters, zero apologies.', 'Moonfat is a single-style display monster drawn at maximum density.', ARRAY['poster', 'heavy', 'branding', 'headline'], true),
-  ('insomnia-serif', 'Insomnia Serif', 'See Night Studio', 'serif', 2, 90, 2024, 'Editorial elegance with a restless pulse.', 'Insomnia Serif pairs razor-thin hairlines with wedge serifs.', ARRAY['editorial', 'magazine', 'elegant', 'high-contrast'], true),
-  ('nightshift-mono', 'Nightshift Mono', 'Dimas Prayoga', 'mono', 8, 80, 2025, 'Code, captions, and cargo manifests.', 'Nightshift Mono treats monospace as a personality.', ARRAY['code', 'technical', 'ui', 'monospace'], false),
-  ('vanta-script', 'Vanta Script', 'Rara Adhista', 'script', 4, 70, 2023, 'The darkest black, written by hand.', 'Vanta Script is a connected brush script with an attitude problem.', ARRAY['handwritten', 'logo', 'packaging', 'script'], true),
-  ('afterhours-condensed', 'Afterhours Condensed', 'See Night Studio', 'display', 12, 110, 2024, 'Every poster is a tall order.', 'Afterhours Condensed squeezes six weights and two widths.', ARRAY['condensed', 'poster', 'variable', 'headline'], false),
-  ('stargazer-slab', 'Stargazer Slab', 'Dimas Prayoga', 'serif', 18, 130, 2022, 'Heavy shoulders for heavy stories.', 'Stargazer Slab is a nine-weight slab serif.', ARRAY['variable', 'slab', 'robust', 'branding'], false),
-  ('lucid-wide', 'Lucid Wide', 'See Night Studio', 'sans', 14, 140, 2026, 'Wide awake and taking up space.', 'Lucid Wide is an expanded geometric sans.', ARRAY['wide', 'geometric', 'variable', 'fashion', 'poster'], true);
+  ('nocturne-grotesk', 'Nocturne Grotesk', 'See Night Studio', 'sans', 18, 120, 2025, 'A workhorse sans for the dark hours.', 'Nocturne Grotesk is a nine-weight superfamily built for interfaces that never sleep.', ARRAY['variable', 'grotesk', 'ui', 'branding', 'editorial'], true, '[100,900]', 500, false),
+  ('moonfat-display', 'Moonfat', 'Rara Adhista', 'display', 1, 60, 2026, 'Fat letters, zero apologies.', 'Moonfat is a single-style display monster drawn at maximum density.', ARRAY['poster', 'heavy', 'branding', 'headline'], true, NULL, 400, false),
+  ('insomnia-serif', 'Insomnia Serif', 'See Night Studio', 'serif', 2, 90, 2024, 'Editorial elegance with a restless pulse.', 'Insomnia Serif pairs razor-thin hairlines with wedge serifs.', ARRAY['editorial', 'magazine', 'elegant', 'high-contrast'], true, NULL, 400, true),
+  ('nightshift-mono', 'Nightshift Mono', 'Dimas Prayoga', 'mono', 8, 80, 2025, 'Code, captions, and cargo manifests.', 'Nightshift Mono treats monospace as a personality.', ARRAY['code', 'technical', 'ui', 'monospace'], false, '[100,800]', 400, false),
+  ('vanta-script', 'Vanta Script', 'Rara Adhista', 'script', 4, 70, 2023, 'The darkest black, written by hand.', 'Vanta Script is a connected brush script with an attitude problem.', ARRAY['handwritten', 'logo', 'packaging', 'script'], true, '[400,700]', 500, false),
+  ('afterhours-condensed', 'Afterhours Condensed', 'See Night Studio', 'display', 12, 110, 2024, 'Every poster is a tall order.', 'Afterhours Condensed squeezes six weights and two widths.', ARRAY['condensed', 'poster', 'variable', 'headline'], false, '[200,700]', 400, false),
+  ('stargazer-slab', 'Stargazer Slab', 'Dimas Prayoga', 'serif', 18, 130, 2022, 'Heavy shoulders for heavy stories.', 'Stargazer Slab is a nine-weight slab serif.', ARRAY['variable', 'slab', 'robust', 'branding'], false, '[100,900]', 500, false),
+  ('lucid-wide', 'Lucid Wide', 'See Night Studio', 'sans', 14, 140, 2026, 'Wide awake and taking up space.', 'Lucid Wide is an expanded geometric sans.', ARRAY['wide', 'geometric', 'variable', 'fashion', 'poster'], true, '[200,900]', 500, false)
+ON CONFLICT (slug) DO UPDATE SET
+  weight_range = EXCLUDED.weight_range,
+  default_weight = EXCLUDED.default_weight,
+  has_italic = EXCLUDED.has_italic;
 
 INSERT INTO pages (slug, content)
 VALUES

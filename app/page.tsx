@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import { getFeaturedTypefaces, getPageContent } from "@/lib/data";
+import { getFeaturedTypefaces, getPageContent, getTypefaces } from "@/lib/data";
 import { formatPrice } from "@/lib/typefaces";
 import { fontFamilyStyle } from "@/lib/product-fonts";
 import { Marquee } from "@/components/marquee";
@@ -8,12 +8,19 @@ import { RevealSection } from "@/components/reveal-section";
 import { PageBar, SectionHeading } from "@/components/ui";
 
 export default async function Home() {
-  const [featured, homeContent] = await Promise.all([
+  const [featured, homeContent, allTypefaces] = await Promise.all([
     getFeaturedTypefaces(),
     getPageContent("home"),
+    getTypefaces(),
   ]);
 
   const services = homeContent.services ?? [];
+  const heroBar: string[] = homeContent.heroBar ?? [
+    "Independent type foundry",
+    "Est. 2019",
+    "Jakarta — GMT+7",
+    "Open for custom work",
+  ];
   const tagline =
     homeContent.tagline ??
     "Typefaces for brands that keep late hours. Drawn by hand, spaced with obsession, released when ready.";
@@ -26,10 +33,11 @@ export default async function Home() {
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
         <PageBar subtle>
-          <span>Independent type foundry</span>
-          <span className="hidden md:inline">Est. 2019</span>
-          <span className="hidden sm:inline">Jakarta — GMT+7</span>
-          <span className="text-accent">Open for custom work</span>
+          {heroBar.map((item: string, i: number) => (
+            <span key={i} className={i === heroBar.length - 1 ? "text-accent" : ""}>
+              {item}
+            </span>
+          ))}
         </PageBar>
 
         <div className="grid grid-cols-1 gap-10 py-10 md:py-16 lg:grid-cols-12">
@@ -62,7 +70,7 @@ export default async function Home() {
       </section>
 
       {/* ── Ticker ───────────────────────────────────────── */}
-      <Marquee />
+      <Marquee typefaces={allTypefaces} />
 
       {/* ── Featured typefaces ───────────────────────────── */}
       <RevealSection>
