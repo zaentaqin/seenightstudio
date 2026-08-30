@@ -10,8 +10,10 @@ import {
   WEIGHT_NAMES,
   cssVarFor,
 } from "@/lib/product-fonts";
+import { getFontFileUrlOrNull } from "@/lib/supabase/storage";
 import { TypeTester } from "@/components/type-tester";
 import { GlyphTester } from "@/components/glyph-tester";
+import { FontFaceLoader } from "@/components/font-face-loader";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { SectionHeading } from "@/components/ui";
 
@@ -71,9 +73,11 @@ export default async function TypefacePage({
   const { prev, next } = await getNeighbors(slug);
   const webPrice = Math.round((font.price * 1.5) / 5) * 5;
   const appPrice = font.price * 3;
+  const fontUrl = getFontFileUrlOrNull(font.font_path);
 
   return (
     <>
+      <FontFaceLoader slug={slug} fontPath={font.font_path} />
       {/* ── Meta bar ─────────────────────────────────────── */}
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-ink py-4 font-mono text-[10px] tracking-[0.2em] uppercase">
@@ -93,7 +97,7 @@ export default async function TypefacePage({
       <section className="mx-auto max-w-[1600px] border-b border-ink/15 px-4 py-14 md:px-8 md:py-20">
         <p
           className="text-center leading-[0.9] break-words [font-size:clamp(3rem,13vw,13rem)]"
-          style={fontFamilyStyle(slug)}
+          style={fontFamilyStyle(slug, font.font_path)}
         >
           {font.name}
         </p>
@@ -106,7 +110,9 @@ export default async function TypefacePage({
       <section className="mx-auto max-w-[1600px] px-4 pt-16 md:px-8">
         <SectionHeading>01 / Try it live</SectionHeading>
         <TypeTester
+          slug={slug}
           fontVar={cssVarFor(slug)}
+          fontUrl={fontUrl}
           initialText="The night is long; the type is patient."
           weightRange={meta?.weightRange}
           defaultWeight={meta?.defaultWeight ?? 400}
@@ -179,7 +185,7 @@ export default async function TypefacePage({
               </span>
               <span
                 className="mt-6 text-3xl leading-none transition-transform duration-200 group-hover:-translate-y-0.5"
-                style={fontFamilyStyle(slug)}
+                style={fontFamilyStyle(slug, font.font_path)}
               >
                 Aa
               </span>
@@ -194,7 +200,7 @@ export default async function TypefacePage({
       {/* ── Glyph grid ───────────────────────────────────── */}
       <section className="mx-auto max-w-[1600px] px-4 pb-16 md:px-8">
         <SectionHeading>05 / Glyphs — partial set</SectionHeading>
-        <GlyphTester fontVar={cssVarFor(slug)} />
+        <GlyphTester slug={slug} fontVar={cssVarFor(slug)} fontUrl={fontUrl} />
       </section>
 
       {/* ── Licensing ────────────────────────────────────── */}
@@ -262,7 +268,7 @@ export default async function TypefacePage({
             </span>
             <span
               className="text-2xl leading-tight md:text-3xl"
-              style={fontFamilyStyle(prev.slug)}
+              style={fontFamilyStyle(prev.slug, prev.font_path)}
             >
               {prev.name}
             </span>
@@ -278,7 +284,7 @@ export default async function TypefacePage({
             </span>
             <span
               className="text-2xl leading-tight md:text-3xl"
-              style={fontFamilyStyle(next.slug)}
+              style={fontFamilyStyle(next.slug, next.font_path)}
             >
               {next.name}
             </span>

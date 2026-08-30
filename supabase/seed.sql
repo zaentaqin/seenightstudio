@@ -1,6 +1,10 @@
 -- ============================================================
 -- SEE NIGHT STUDIO — Full Supabase Schema
+-- Tables: typefaces, pages, settings + storage bucket: font-files
 -- ============================================================
+
+-- Re-run safe migration for a pre-existing typefaces table.
+ALTER TABLE typefaces ADD COLUMN IF NOT EXISTS font_path text;
 
 -- TYPEFACES
 CREATE TABLE IF NOT EXISTS typefaces (
@@ -16,15 +20,20 @@ CREATE TABLE IF NOT EXISTS typefaces (
   description text NOT NULL DEFAULT '',
   tags        text[] DEFAULT '{}',
   featured    boolean DEFAULT false,
+  font_path   text,
   created_at  timestamptz DEFAULT now(),
   updated_at  timestamptz DEFAULT now()
 );
 
 ALTER TABLE typefaces ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "typefaces_select_public" ON typefaces;
+DROP POLICY IF EXISTS "typefaces_insert_auth" ON typefaces;
+DROP POLICY IF EXISTS "typefaces_update_auth" ON typefaces;
+DROP POLICY IF EXISTS "typefaces_delete_auth" ON typefaces;
 CREATE POLICY "typefaces_select_public" ON typefaces FOR SELECT USING (true);
-CREATE POLICY "typefaces_insert_auth" ON typefaces FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "typefaces_update_auth" ON typefaces FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "typefaces_delete_auth" ON typefaces FOR DELETE TO authenticated USING (true);
+CREATE POLICY "typefaces_insert_all" ON typefaces FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "typefaces_update_all" ON typefaces FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "typefaces_delete_all" ON typefaces FOR DELETE TO anon, authenticated USING (true);
 
 -- PAGES
 CREATE TABLE IF NOT EXISTS pages (
@@ -36,10 +45,14 @@ CREATE TABLE IF NOT EXISTS pages (
 );
 
 ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "pages_select_public" ON pages;
+DROP POLICY IF EXISTS "pages_insert_auth" ON pages;
+DROP POLICY IF EXISTS "pages_update_auth" ON pages;
+DROP POLICY IF EXISTS "pages_delete_auth" ON pages;
 CREATE POLICY "pages_select_public" ON pages FOR SELECT USING (true);
-CREATE POLICY "pages_insert_auth" ON pages FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "pages_update_auth" ON pages FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "pages_delete_auth" ON pages FOR DELETE TO authenticated USING (true);
+CREATE POLICY "pages_insert_all" ON pages FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "pages_update_all" ON pages FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "pages_delete_all" ON pages FOR DELETE TO anon, authenticated USING (true);
 
 -- SETTINGS
 CREATE TABLE IF NOT EXISTS settings (
@@ -51,10 +64,14 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "settings_select_public" ON settings;
+DROP POLICY IF EXISTS "settings_insert_auth" ON settings;
+DROP POLICY IF EXISTS "settings_update_auth" ON settings;
+DROP POLICY IF EXISTS "settings_delete_auth" ON settings;
 CREATE POLICY "settings_select_public" ON settings FOR SELECT USING (true);
-CREATE POLICY "settings_insert_auth" ON settings FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "settings_update_auth" ON settings FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "settings_delete_auth" ON settings FOR DELETE TO authenticated USING (true);
+CREATE POLICY "settings_insert_all" ON settings FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "settings_update_all" ON settings FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "settings_delete_all" ON settings FOR DELETE TO anon, authenticated USING (true);
 
 -- ============================================================
 -- SEED DATA
@@ -131,3 +148,20 @@ VALUES
       {"label": "Contact", "href": "/contact"}
     ]
   }'::jsonb);
+
+-- ============================================================
+-- STORAGE — font-files bucket
+-- ============================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('font-files', 'font-files', true)
+ON CONFLICT (id) DO NOTHING;
+
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "font_files_public_read" ON storage.objects;
+DROP POLICY IF EXISTS "font_files_public_insert" ON storage.objects;
+DROP POLICY IF EXISTS "font_files_public_update" ON storage.objects;
+DROP POLICY IF EXISTS "font_files_public_delete" ON storage.objects;
+CREATE POLICY "font_files_public_read" ON storage.objects FOR SELECT USING (bucket_id = 'font-files');
+CREATE POLICY "font_files_public_insert" ON storage.objects FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'font-files');
+CREATE POLICY "font_files_public_update" ON storage.objects FOR UPDATE TO anon, authenticated USING (bucket_id = 'font-files');
+CREATE POLICY "font_files_public_delete" ON storage.objects FOR DELETE TO anon, authenticated USING (bucket_id = 'font-files');

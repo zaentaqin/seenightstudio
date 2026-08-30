@@ -21,6 +21,8 @@ export type Typeface = {
   description: string;
   tags: string[];
   featured?: boolean;
+  /** Storage object path for the real font file (e.g. "slug/file.otf"). */
+  font_path?: string | null;
 };
 
 export const typefaces: Typeface[] = [

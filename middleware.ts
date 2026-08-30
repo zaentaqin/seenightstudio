@@ -7,16 +7,14 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     if (!isAuthenticated) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/login";
-      return NextResponse.redirect(url);
+      return NextResponse.redirect(
+        new URL("/admin/login", request.nextUrl.origin),
+      );
     }
   }
 
   if (pathname === "/admin/login" && isAuthenticated) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin";
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(new URL("/admin", request.nextUrl.origin));
   }
 
   const response = NextResponse.next();

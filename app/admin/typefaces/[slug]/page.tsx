@@ -81,6 +81,49 @@ export default async function EditTypefacePage({
           defaultValue={font.tags?.join(", ") ?? ""}
         />
 
+        <div>
+          <label className="mb-1.5 block font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+            Font file (OTF / TTF / WOFF / WOFF2)
+          </label>
+          <div className="border border-dashed border-ink/25">
+            <div className="flex items-center justify-between gap-3 border-b border-ink/10 px-4 py-3">
+              <span className="truncate font-mono text-[11px]">
+                {font.font_path
+                  ? font.font_path.split("/").pop()
+                  : "No file uploaded"}
+              </span>
+              {font.font_path && (
+                <span className="shrink-0 font-mono text-[9px] text-accent uppercase">
+                  live on site
+                </span>
+              )}
+            </div>
+            <input
+              type="file"
+              name="fontFile"
+              accept=".otf,.ttf,.woff,.woff2"
+              className="block w-full bg-transparent px-4 py-3 text-sm outline-none file:mr-4 file:border-0 file:bg-ink file:px-4 file:py-2 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.15em] file:text-paper"
+            />
+          </div>
+          <div className="mt-2 flex items-center justify-between">
+            <p className="font-mono text-[10px] text-ink/40">
+              Pick a file to replace the current one. Max 10MB.
+            </p>
+            {font.font_path && (
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="removeFontFile"
+                  className="h-4 w-4 accent-[var(--accent)]"
+                />
+                <span className="font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+                  Remove file
+                </span>
+              </label>
+            )}
+          </div>
+        </div>
+
         <label className="flex items-center gap-2">
           <input
             type="checkbox"

@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AlignCenter, AlignLeft } from "lucide-react";
-import { WEIGHT_NAMES } from "@/lib/product-fonts";
+import { uploadedFamilyName, WEIGHT_NAMES } from "@/lib/product-fonts";
+import { useUploadedFont, type FontLoadState } from "@/components/use-uploaded-font";
 
 type Props = {
+  slug: string;
   fontVar: string;
+  fontUrl?: string | null;
   initialText: string;
   weightRange?: [number, number];
   defaultWeight: number;
@@ -13,7 +16,9 @@ type Props = {
 };
 
 export function TypeTester({
+  slug,
   fontVar,
+  fontUrl,
   initialText,
   weightRange,
   defaultWeight,
@@ -27,6 +32,15 @@ export function TypeTester({
   const [italic, setItalic] = useState(false);
   const [sizeDraft, setSizeDraft] = useState<string | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
+
+  const fontState: FontLoadState = useUploadedFont(
+    fontUrl ? uploadedFamilyName(slug) : null,
+    fontUrl ?? null,
+  );
+  const displayFamily =
+    fontState === "ready"
+      ? `"${uploadedFamilyName(slug)}", var(${fontVar})`
+      : `var(${fontVar})`;
 
   const commitSizeDraft = () => {
     if (sizeDraft === null) return;
@@ -180,7 +194,7 @@ export function TypeTester({
         rows={2}
         className="block w-full resize-none overflow-hidden border-none bg-transparent px-4 py-8 leading-[1.08] break-words outline-none md:px-8"
         style={{
-          fontFamily: `var(${fontVar})`,
+          fontFamily: displayFamily,
           fontSize: `${size}px`,
           fontWeight: weight,
           textAlign: align,
@@ -191,7 +205,13 @@ export function TypeTester({
       />
 
       <div className="flex justify-between border-t border-ink/15 px-4 py-3 font-mono text-[10px] tracking-[0.15em] text-ink/40 uppercase md:px-8">
-        <span>Live preview — rendered in your browser</span>
+        <span>
+          {fontState === "loading"
+            ? "Loading real specimen…"
+            : fontState === "ready"
+              ? "Live preview — real font file"
+              : "Live preview — rendered with placeholder"}
+        </span>
         <span>
           {WEIGHT_NAMES[weight] ?? weight} / {size}px
         </span>

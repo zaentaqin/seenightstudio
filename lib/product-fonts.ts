@@ -152,6 +152,24 @@ export function cssVarFor(slug: string): string {
   return productFonts[slug]?.cssVar ?? "--font-space-grotesk";
 }
 
-export function fontFamilyStyle(slug: string): React.CSSProperties {
-  return { fontFamily: `var(${cssVarFor(slug)})` };
+/** Family name registered client-side for a real uploaded font file. */
+export function uploadedFamilyName(slug: string): string {
+  return `SN ${slug}`;
+}
+
+/**
+ * Font-family stack for a slug.
+ * When a real font file exists we prefer it, falling back to the Google-font
+ * placeholder CSS variable so nothing renders as a bare generic family.
+ */
+export function fontFamilyFor(slug: string, fontPath?: string | null): string {
+  const fallback = `var(${cssVarFor(slug)})`;
+  return fontPath ? `"${uploadedFamilyName(slug)}", ${fallback}` : fallback;
+}
+
+export function fontFamilyStyle(
+  slug: string,
+  fontPath?: string | null,
+): React.CSSProperties {
+  return { fontFamily: fontFamilyFor(slug, fontPath) };
 }

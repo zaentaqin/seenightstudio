@@ -20,9 +20,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const h = await headers();
-  const pathname = h.get("x-pathname") ?? "";
-  const isAdmin = pathname.startsWith("/admin");
+  let isAdmin = false;
+  try {
+    const h = await headers();
+    const pathname = h.get("x-pathname") ?? "";
+    isAdmin = pathname.startsWith("/admin");
+  } catch {
+    /* headers() unavailable — render as public page */
+  }
 
   return (
     <html lang="en" className={allFontVariables} suppressHydrationWarning>

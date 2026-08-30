@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { isAdmin } from "@/app/admin/actions/is-admin";
 import { AdminSidebar } from "@/components/admin/sidebar";
 
 export const metadata: Metadata = {
@@ -14,7 +13,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authenticated = await isAdmin();
+  let authenticated = false;
+  try {
+    const { isAdmin } = await import("@/app/admin/actions/is-admin");
+    authenticated = await isAdmin();
+  } catch {
+    /* cookie read failed — treat as unauthenticated */
+  }
 
   if (!authenticated) {
     return <>{children}</>;

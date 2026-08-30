@@ -37,7 +37,7 @@ export default async function AdminTypefaces() {
           <span className="col-span-1">Price</span>
           <span className="col-span-2">Designer</span>
           <span className="col-span-1">Year</span>
-          <span className="col-span-1">Featured</span>
+          <span className="col-span-1">File</span>
           <span className="col-span-1 text-right">Edit</span>
         </div>
 
@@ -64,8 +64,14 @@ export default async function AdminTypefaces() {
             <span className="col-span-1 font-mono text-[10px] text-ink/60">
               {font.year}
             </span>
-            <span className="col-span-1 font-mono text-[10px] text-ink/60">
-              {font.featured ? "Yes" : "No"}
+            <span className="col-span-1">
+              {font.font_path ? (
+                <span className="inline-block border border-accent/50 px-1.5 py-0.5 font-mono text-[9px] tracking-[0.1em] text-accent uppercase">
+                  {font.font_path.split(".").pop()}
+                </span>
+              ) : (
+                <span className="font-mono text-[10px] text-ink/30">—</span>
+              )}
             </span>
             <div className="col-span-1 flex justify-end">
               <Link

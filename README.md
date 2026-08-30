@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# See Night Studio
 
-## Getting Started
+Brutalist editorial site + type foundry marketplace for **See Night Studio** — a fictional Jakarta-based type foundry. Draws expressive retail and custom typefaces for brands that keep late hours.
 
-First, run the development server:
+Live: [seenightstudio.vercel.app](https://seenightstudio.vercel.app)
+
+## Stack
+
+- **Next.js 16** (App Router, Turbopack)
+- **Tailwind CSS 4** (CSS custom-property theming, light/dark)
+- **lucide-react** — icons
+- **zustand** — cart state (localStorage)
+- **Supabase** — CMS + storage (`@supabase/ssr`)
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local`:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=<project-url>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable-key>
+ADMIN_PASSWORD=admin123
+```
 
-To learn more about Next.js, take a look at the following resources:
+Without Supabase credentials the site falls back to the hardcoded data in `lib/typefaces.ts` and `lib/data.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Database setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run `supabase/seed.sql` in the Supabase SQL Editor — creates the `typefaces`, `pages`, and `settings` tables, seed data, RLS policies, and the `font-files` storage bucket (idempotent, safe to re-run).
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Command       | Description            |
+| ------------- | ---------------------- |
+| `npm run dev` | Dev server (Turbopack) |
+| `npm run build` | Production build     |
+| `npm run start`  | Production server   |
+| `npm run lint`   | ESLint              |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features
+
+- Home, fonts index, font detail (8 typefaces), about, contact, 404
+- Dark/light mode via CSS-variable swap (default light)
+- Catalog filtering synced to URL (`?q=&cat=&tag=`)
+- Interactive type tester + glyph preview
+- **Cart** (localStorage, zustand) with add-to-cart tiers + drawer + toasts
+- **Admin dashboard** (`/admin`) — password-based cookie auth, CRUD for typefaces/pages/settings, **font file upload (OTF/TTF/WOFF2)** used for real live previews via the FontFace API
+- Sentry-free, static-first with dynamic admin routes
+
+## Admin
+
+See **[ADMIN.md](ADMIN.md)** for the full admin guide: access, pages, database schema, storage, and the font upload flow.
+
+## Project structure
+
+```
+app/        # Pages (site + /admin)
+components/ # Nav, footer, testers, cart, admin sidebar…
+lib/        # Data layer, typefaces, fonts, cart store, supabase clients
+supabase/   # seed.sql (+ create-admin.sql)
+middleware.ts # Cookie-session guard for /admin/* + x-pathname header
+```
+
+## Deploy
+
+Deployed on Vercel. Apply the env vars above in the Vercel project settings, then push to `main`.
+
+Typefaces shown are placeholders — real font family shipping arrives in phase two. See `CONCEPT.md` for the design system and roadmap.

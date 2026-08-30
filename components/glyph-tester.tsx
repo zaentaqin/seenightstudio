@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { uploadedFamilyName } from "@/lib/product-fonts";
+import { useUploadedFont } from "@/components/use-uploaded-font";
 
 const GLYPHS =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&@§?!%*()".split(
@@ -11,8 +13,24 @@ function unicodeOf(glyph: string): string {
   return `U+${glyph.codePointAt(0)?.toString(16).toUpperCase().padStart(4, "0")}`;
 }
 
-export function GlyphTester({ fontVar }: { fontVar: string }) {
+export function GlyphTester({
+  slug,
+  fontVar,
+  fontUrl,
+}: {
+  slug: string;
+  fontVar: string;
+  fontUrl?: string | null;
+}) {
   const [selected, setSelected] = useState("A");
+  const fontState = useUploadedFont(
+    fontUrl ? uploadedFamilyName(slug) : null,
+    fontUrl ?? null,
+  );
+  const displayFamily =
+    fontState === "ready"
+      ? `"${uploadedFamilyName(slug)}", var(${fontVar})`
+      : `var(${fontVar})`;
 
   return (
     <div className="grid grid-cols-1 gap-px border-x border-b border-ink/15 bg-ink/15 lg:grid-cols-12">
@@ -24,7 +42,7 @@ export function GlyphTester({ fontVar }: { fontVar: string }) {
 
         <p
           className="my-6 self-center leading-none select-none [font-size:clamp(8rem,14vw,14rem)]"
-          style={{ fontFamily: `var(${fontVar})` }}
+          style={{ fontFamily: displayFamily }}
           aria-live="polite"
         >
           {selected}
@@ -57,7 +75,7 @@ export function GlyphTester({ fontVar }: { fontVar: string }) {
                   : "bg-paper hover:bg-ink hover:text-paper"
               }`}
               style={{
-                fontFamily: `var(${fontVar})`,
+                fontFamily: displayFamily,
                 fontSize: "clamp(1.5rem, 3vw, 2.75rem)",
               }}
             >

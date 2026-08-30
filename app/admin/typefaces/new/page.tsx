@@ -64,6 +64,21 @@ export default function NewTypefacePage() {
           placeholder="variable, grotesk, ui, branding"
         />
 
+        <div>
+          <label className="mb-1.5 block font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+            Font file (OTF / TTF / WOFF / WOFF2)
+          </label>
+          <input
+            type="file"
+            name="fontFile"
+            accept=".otf,.ttf,.woff,.woff2"
+            className="block w-full border border-dashed border-ink/25 bg-transparent px-4 py-3 text-sm outline-none transition-colors file:mr-4 file:border-0 file:bg-ink file:px-4 file:py-2 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.15em] file:text-paper hover:border-ink focus:border-ink"
+          />
+          <p className="mt-1.5 font-mono text-[10px] text-ink/40">
+            Used for the live specimen on the public font page. Max 10MB.
+          </p>
+        </div>
+
         <label className="flex items-center gap-2">
           <input
             type="checkbox"

@@ -44,9 +44,31 @@ Form fields:
 - `description` — Deskripsi panjang
 - `tags` — Comma-separated tags
 - `featured` — Checkbox, tampil di homepage
+- `fontFile` — Upload file font asli (`.otf`, `.ttf`, `.woff`, `.woff2`), maks 10MB
 
 ### `/admin/typefaces/[slug]` — Edit Typeface
-Sama seperti form tambah, tapi slug tidak bisa diubah. Ada tombol Delete di bawah.
+Sama seperti form tambah, tapi slug tidak bisa diubah. Ada:
+- Input file untuk **mengganti** font (hapus file lama, upload baru)
+- Checkbox **"Remove file"** untuk menghapus font dari storage
+- Tombol Delete di bawah
+
+## Upload Font & Live Preview
+
+Admin bisa upload file font asli per typeface. File disimpan di **Supabase Storage** (bucket `font-files`, public). Kolom `font_path` di tabel `typefaces` menyimpan path object.
+
+Halaman font publik (`/fonts/<slug>`) memakai file asli itu untuk **live preview**:
+- **TypeTester** (`01 / Try it live`) — mengetik langsung dengan font asli via FontFace API
+- **GlyphTester** (`05 / Glyphs`) — grid glyph pakai font asli
+- **Hero specimen** + grid styles + prev/next — pakai font asli (selama sudah ke-load)
+
+Jika belum ada file di-upload (atau file gagal load), semua tampilan **fallback ke placeholder** Google Font. Indikator di footer TypeTester menampilkan "real font file" vs "placeholder".
+
+Catatan:
+- Font didaftarkan dengan family `"SN <slug>"` dan weight range 100–900 → **variable font** merespons slider weight; OTF statis tetap satu weight.
+- File wajib `.otf/.ttf/.woff/.woff2` dan ≤10MB (limit `serverActions.bodySizeLimit` di `next.config.ts`).
+- Hapus typeface = objek storage ikut terhapus.
+
+## Supabase Database
 
 ### `/admin/pages` — List Pages
 Menampilkan slug dan waktu update terakhir.
@@ -112,9 +134,21 @@ Project: `broztftclcbnuuycdxxq` (ap-southeast-1)
 
 | Table | PK | Unique | Purpose |
 |-------|-----|--------|---------|
-| `typefaces` | uuid | slug | Data typeface/font |
+| `typefaces` | uuid | slug | Data typeface/font (`font_path` untuk file) |
 | `pages` | uuid | slug | CMS content per page |
 | `settings` | uuid | key | Key-value site config |
+
+### Storage
+
+| Bucket | Public | Isi |
+|--------|--------|-----|
+| `font-files` | yes | File font asli tiap typeface |
+
+URL publik file: `https://<ref>.supabase.co/storage/v1/object/public/font-files/<path>`
+
+### RLS Policies
+- **Tables** — public read; insert/update/delete untuk anon + authenticated (dibuka agar admin cookie-auth bisa menulis via anon key)
+- **Storage `font-files`** — public read + upload terbuka (anon/authenticated)
 
 ### Environment Variables
 
@@ -124,15 +158,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_GM8JXYGwYI3yF643R2mnuA_-2tBN
 ADMIN_PASSWORD=admin123  (optional, default: admin123)
 ```
 
-### RLS Policies
-- **Public read** — semua tabel bisa dibaca tanpa auth
-- **Authenticated write** — insert/update/delete hanya untuk authenticated users
-
 ### Fallback
 Jika Supabase tidak available, website tetap jalan menggunakan hardcoded data dari `lib/typefaces.ts` dan `lib/data.ts`.
 
 ### Seed SQL
-File: `supabase/seed.sql` — berisi CREATE TABLE + INSERT seed data untuk semua tables.
+File: `supabase/seed.sql` — CREATE TABLE (+ `font_path`), seed data, RLS, dan setup bucket storage `font-files`. Idempotent (DROP POLICY IF EXISTS + ON CONFLICT), aman di-run ulang.
 File: `supabase/create-admin.sql` — SQL untuk buat admin user di Supabase Auth (tidak dipakai, auth sekarang cookie-based).
 
 ## Sidebar Navigation
