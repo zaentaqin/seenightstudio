@@ -64,6 +64,32 @@ export default function NewTypefacePage() {
           placeholder="variable, grotesk, ui, branding"
         />
 
+        <div className="grid grid-cols-3 gap-4">
+          <Field
+            name="weight_range"
+            label="Weight range"
+            placeholder="[100,900]"
+          />
+          <Field
+            name="default_weight"
+            label="Default weight"
+            type="number"
+            placeholder="400"
+          />
+          <div className="flex items-end pb-3">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="has_italic"
+                className="h-4 w-4 accent-[var(--accent)]"
+              />
+              <span className="font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
+                Has italic
+              </span>
+            </label>
+          </div>
+        </div>
+
         <div>
           <label className="mb-1.5 block font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
             Font file (OTF / TTF / WOFF / WOFF2)

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "1",
+    "key": "footer",
+    "value": {
+      "columns": [
+        {
+          "title": "Index",
+          "links": [
+            {"label": "Home", "href": "/"},
+            {"label": "All fonts", "href": "/fonts"},
+            {"label": "About", "href": "/about"},
+            {"label": "Contact", "href": "/contact"}
+          ]
+        },
+        {
+          "title": "Elsewhere",
+          "links": [
+            {"label": "Instagram", "href": "https://instagram.com"},
+            {"label": "Behance", "href": "https://behance.net"},
+            {"label": "X / Twitter", "href": "https://x.com"}
+          ]
+        },
+        {
+          "title": "Office",
+          "links": [
+            {"label": "hello@seenight.studio", "href": "mailto:hello@seenight.studio"},
+            {"label": "Jakarta, ID — GMT+7", "href": "/contact"},
+            {"label": "Always after dark", "href": "/contact"}
+          ]
+        }
+      ],
+      "newsletter": "New typefaces, work in progress, and the occasional rant about spacing. No spam — we are too busy kerning.",
+      "copyright": "© 2026 See Night Studio",
+      "notice": "Typefaces shown are placeholders — see CONCEPT.md",
+      "location": "Set in the dead of night, Jakarta"
+    },
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "2",
+    "key": "nav",
+    "value": {
+      "links": [
+        {"label": "Fonts", "href": "/fonts"},
+        {"label": "About", "href": "/about"},
+        {"label": "Contact", "href": "/contact"}
+      ]
+    },
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  }
+]

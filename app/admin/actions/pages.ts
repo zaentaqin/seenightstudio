@@ -2,11 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
+import { localUpdatePage } from "@/lib/local-store";
 
 export async function updatePage(slug: string, formData: FormData) {
-  const supabase = await createClient();
-
   const contentRaw = formData.get("content") as string;
   let content: Record<string, unknown>;
 
@@ -15,6 +14,17 @@ export async function updatePage(slug: string, formData: FormData) {
   } catch {
     throw new Error("Invalid JSON content");
   }
+
+  if (!(await hasSupabaseTables())) {
+    await localUpdatePage(slug, content);
+    revalidatePath("/admin/pages");
+    revalidatePath(`/admin/pages/${slug}`);
+    revalidatePath(`/${slug}`);
+    redirect("/admin/pages");
+  }
+
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
 
   const { error } = await supabase
     .from("pages")

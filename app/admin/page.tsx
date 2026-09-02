@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
-import { hasSupabaseConfig } from "@/lib/supabase/has-config";
+import { getTypefaces, getPageContent, getSettings } from "@/lib/data";
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
 import Link from "next/link";
 import { Type, FileText, Settings } from "lucide-react";
 
 export default async function AdminDashboard() {
-  if (!hasSupabaseConfig()) {
+  if (!(await hasSupabaseTables())) {
     return (
       <>
         <h1 className="text-3xl font-bold tracking-tighter uppercase">
@@ -12,41 +12,38 @@ export default async function AdminDashboard() {
         </h1>
         <div className="mt-8 border border-ink/15 p-8 text-center">
           <p className="font-mono text-sm text-ink/60">
-            Supabase is not configured. Add env vars to enable the admin
-            dashboard.
+            Running with local JSON store. Add Supabase env vars to enable database.
           </p>
           <p className="mt-2 font-mono text-[10px] text-ink/40">
-            NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+            Data is stored in data/*.json files
           </p>
         </div>
       </>
     );
   }
 
-  const supabase = await createClient();
-
-  const [typefaces, pages, settings] = await Promise.all([
-    supabase.from("typefaces").select("id", { count: "exact", head: true }),
-    supabase.from("pages").select("id", { count: "exact", head: true }),
-    supabase.from("settings").select("id", { count: "exact", head: true }),
+  const [typefaces, , settings] = await Promise.all([
+    getTypefaces(),
+    getPageContent("home"),
+    getSettings("footer"),
   ]);
 
   const stats = [
     {
       label: "Typefaces",
-      count: typefaces.count ?? 0,
+      count: typefaces.length,
       href: "/admin/typefaces",
       icon: Type,
     },
     {
       label: "Pages",
-      count: pages.count ?? 0,
+      count: 3,
       href: "/admin/pages",
       icon: FileText,
     },
     {
       label: "Settings",
-      count: settings.count ?? 0,
+      count: Object.keys(settings).length,
       href: "/admin/settings",
       icon: Settings,
     },

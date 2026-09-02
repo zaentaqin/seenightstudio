@@ -1,13 +1,9 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getTypefaces } from "@/lib/data";
 import { Plus, Pencil } from "lucide-react";
 
 export default async function AdminTypefaces() {
-  const supabase = await createClient();
-  const { data: typefaces } = await supabase
-    .from("typefaces")
-    .select("*")
-    .order("name");
+  const typefaces = await getTypefaces();
 
   return (
     <>
@@ -17,7 +13,7 @@ export default async function AdminTypefaces() {
             Typefaces
           </h1>
           <p className="mt-2 font-mono text-[10px] tracking-[0.2em] text-ink/40 uppercase">
-            {typefaces?.length ?? 0} typefaces
+            {typefaces.length} typefaces
           </p>
         </div>
         <Link
@@ -41,9 +37,9 @@ export default async function AdminTypefaces() {
           <span className="col-span-1 text-right">Edit</span>
         </div>
 
-        {typefaces?.map((font) => (
+        {typefaces.map((font) => (
           <div
-            key={font.id}
+            key={font.slug}
             className="grid grid-cols-12 items-center gap-4 border-b border-ink/10 px-4 py-3 transition-colors last:border-b-0 hover:bg-ink/5 md:px-6"
           >
             <span className="col-span-3 truncate text-sm font-bold">
@@ -84,7 +80,7 @@ export default async function AdminTypefaces() {
           </div>
         ))}
 
-        {(!typefaces || typefaces.length === 0) && (
+        {typefaces.length === 0 && (
           <div className="px-4 py-12 text-center font-mono text-[10px] text-ink/40 uppercase">
             No typefaces found
           </div>

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "slug": "home",
+    "content": {
+      "heroBar": ["Independent type foundry", "Est. 2019", "Jakarta — GMT+7", "Open for custom work"],
+      "tagline": "Typefaces for brands that keep late hours. Drawn by hand, spaced with obsession, released when ready.",
+      "services": [
+        {"index": "01", "title": "Custom Typefaces", "desc": "Bespoke letterforms drawn for your brand alone — logotypes, wordmarks, full families."},
+        {"index": "02", "title": "Retail Licensing", "desc": "Desktop, web, and app licenses with terms written for humans, not lawyers."},
+        {"index": "03", "title": "Collaborations", "desc": "Lettering, wordmark refinements, and joint releases with designers we admire."}
+      ],
+      "manifestoTeaser": "We draw letters after dark — because the best curves never happen at noon."
+    },
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "2",
+    "slug": "about",
+    "content": {
+      "manifesto": "We are a foundry for the dark hours — drawing letters with more personality than any layout can contain.",
+      "values": [
+        {"index": "01", "title": "Spacing is sacred", "desc": "We will delay a release by a month to fix a single kerning pair. Clients notice. Readers feel it even if they never know why."},
+        {"index": "02", "title": "Personality over neutrality", "desc": "The world has enough geometric sans. Every family we ship must have at least one detail that makes a designer smirk."},
+        {"index": "03", "title": "Drawn, then engineered", "desc": "Letter first, outlines second, OpenType features third — but all three, always. Beauty that breaks in InDesign is not beauty."},
+        {"index": "04", "title": "Open process", "desc": "Works in progress get published, rejected sketches stay visible. Type design looks like magic only when you hide the work."}
+      ],
+      "team": [
+        {"initials": "SN", "name": "Sena Nakula", "role": "Founder · Type Design"},
+        {"initials": "RA", "name": "Rara Adhista", "role": "Partner · Display & Script"},
+        {"initials": "DP", "name": "Dimas Prayoga", "role": "Engineer · Variable & Tooling"}
+      ],
+      "clients": ["Midnight Records", "Kopiright Coffee", "Studio Larut", "Bulan Journal", "Nightshift FM", "Pasar Seni Digital"]
+    },
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "3",
+    "slug": "contact",
+    "content": {
+      "channels": [
+        {"label": "General & licensing", "value": "hello@seenight.studio"},
+        {"label": "Custom projects", "value": "custom@seenight.studio"}
+      ],
+      "socials": [
+        {"label": "Instagram", "value": "@seenightstudio"},
+        {"label": "Behance", "value": "/seenightstudio"},
+        {"label": "X / Twitter", "value": "@seenightco"}
+      ],
+      "address": "See Night Studio\nJl. Malam No. 13, Jakarta Selatan\nIndonesia 12730"
+    },
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  }
+]

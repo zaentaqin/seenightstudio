@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
+import { localGetPages } from "@/lib/local-store";
 import { updatePage } from "@/app/admin/actions/pages";
 
 export default async function EditPagePage({
@@ -9,12 +10,22 @@ export default async function EditPagePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const { data: page } = await supabase
-    .from("pages")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+
+  let page: { slug: string; content: Record<string, unknown> } | null = null;
+
+  if (await hasSupabaseTables()) {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("pages")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    page = data;
+  } else {
+    const pages = await localGetPages();
+    page = pages.find((p) => p.slug === slug) ?? null;
+  }
 
   if (!page) notFound();
 

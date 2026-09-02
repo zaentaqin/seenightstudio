@@ -1,12 +1,39 @@
-import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
+import { localGetSettings } from "@/lib/local-store";
 import { updateSettings } from "@/app/admin/actions/settings";
 
+type LocalSetting = {
+  id: string;
+  key: string;
+  value: Record<string, unknown>;
+  updated_at: string;
+};
+
 export default async function AdminSettings() {
-  const supabase = await createClient();
-  const { data: settings } = await supabase
-    .from("settings")
-    .select("*")
-    .order("key");
+  let settings: LocalSetting[] = [];
+
+  if (await hasSupabaseTables()) {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("settings")
+      .select("*")
+      .order("key");
+    settings = data ?? [];
+  } else {
+    const keys = ["footer", "nav"];
+    for (const key of keys) {
+      const value = await localGetSettings(key);
+      if (value) {
+        settings.push({
+          id: key,
+          key,
+          value,
+          updated_at: new Date().toISOString(),
+        });
+      }
+    }
+  }
 
   return (
     <>
@@ -16,7 +43,7 @@ export default async function AdminSettings() {
       </p>
 
       <div className="mt-8 space-y-8">
-        {settings?.map((setting) => (
+        {settings.map((setting) => (
           <form
             key={setting.id}
             action={updateSettings.bind(null, setting.key)}

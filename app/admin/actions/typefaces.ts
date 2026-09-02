@@ -2,22 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-const FONT_EXTENSIONS = ["otf", "ttf", "woff", "woff2"];
-const MAX_FONT_BYTES = 10 * 1024 * 1024;
-
-function sanitizeFontName(name: string): string {
-  const ext = FONT_EXTENSIONS.find((e) => name.toLowerCase().endsWith(`.${e}`));
-  if (!ext) return "";
-  const base = name
-    .replace(/\.[^/.]+$/, "")
-    .replace(/[^a-zA-Z0-9._-]+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 60);
-  return `${base}.${ext}`;
-}
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
+import {
+  localCreateTypeface,
+  localUpdateTypeface,
+  localDeleteTypeface,
+} from "@/lib/local-store";
 
 function fontFileFromForm(formData: FormData): File | null {
   const value = formData.get("fontFile");
@@ -25,32 +15,49 @@ function fontFileFromForm(formData: FormData): File | null {
   return null;
 }
 
-async function upload(typeface: SupabaseClient, file: File, slug: string) {
-  const ext = sanitizeFontName(file.name);
-  if (!ext) throw new Error(`Unsupported file type: ${file.name}`);
-  if (file.size > MAX_FONT_BYTES) {
-    throw new Error(
-      `File too large (${Math.round(file.size / 1024 / 1024)}MB). Max 10MB.`,
-    );
+function parseWeightRange(raw: string | null): string | null {
+  if (!raw) return null;
+  const cleaned = raw.replace(/[\[\]\(\)]/g, "");
+  const parts = cleaned.split(",").map((s) => s.trim());
+  if (parts.length === 2 && !Number.isNaN(Number(parts[0])) && !Number.isNaN(Number(parts[1]))) {
+    return `[${parts[0]},${parts[1]}]`;
   }
-
-  const path = `${slug}/${ext}`;
-  const { error } = await typeface.storage
-    .from("font-files")
-    .upload(path, file, {
-      upsert: true,
-      contentType: file.type || "application/octet-stream",
-    });
-
-  if (error) throw new Error(`Upload failed: ${error.message}`);
-  return path;
-}
-
-async function remove(supabase: SupabaseClient, path: string) {
-  await supabase.storage.from("font-files").remove([path]);
+  return null;
 }
 
 export async function createTypeface(formData: FormData) {
+  if (!(await hasSupabaseTables())) {
+    const slug = formData.get("slug") as string;
+    const tags = (formData.get("tags") as string || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    await localCreateTypeface({
+      slug,
+      name: formData.get("name") as string,
+      designer: formData.get("designer") as string,
+      category: formData.get("category") as string,
+      styles: Number(formData.get("styles")),
+      price: Number(formData.get("price")),
+      year: Number(formData.get("year")),
+      tagline: formData.get("tagline") as string,
+      description: formData.get("description") as string,
+      tags,
+      featured: formData.get("featured") === "on",
+      font_path: null,
+      weight_range: parseWeightRange(formData.get("weight_range") as string),
+      default_weight: Number(formData.get("default_weight") || 400),
+      has_italic: formData.get("has_italic") === "on",
+    });
+
+    revalidatePath("/admin/typefaces");
+    revalidatePath("/fonts");
+    redirect("/admin/typefaces");
+  }
+
+  const { createClient } = await import("@/lib/supabase/server");
+  const { upload } = await import("./upload-helpers");
   const supabase = await createClient();
 
   const tags = (formData.get("tags") as string)
@@ -75,6 +82,9 @@ export async function createTypeface(formData: FormData) {
     tags,
     featured: formData.get("featured") === "on",
     font_path: fontPath,
+    weight_range: parseWeightRange(formData.get("weight_range") as string),
+    default_weight: Number(formData.get("default_weight") || 400),
+    has_italic: formData.get("has_italic") === "on",
   });
 
   if (error) throw new Error(error.message);
@@ -85,6 +95,37 @@ export async function createTypeface(formData: FormData) {
 }
 
 export async function updateTypeface(slug: string, formData: FormData) {
+  if (!(await hasSupabaseTables())) {
+    const tags = (formData.get("tags") as string || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    await localUpdateTypeface(slug, {
+      name: formData.get("name") as string,
+      designer: formData.get("designer") as string,
+      category: formData.get("category") as string,
+      styles: Number(formData.get("styles")),
+      price: Number(formData.get("price")),
+      year: Number(formData.get("year")),
+      tagline: formData.get("tagline") as string,
+      description: formData.get("description") as string,
+      tags,
+      featured: formData.get("featured") === "on",
+      weight_range: parseWeightRange(formData.get("weight_range") as string),
+      default_weight: Number(formData.get("default_weight") || 400),
+      has_italic: formData.get("has_italic") === "on",
+    });
+
+    revalidatePath("/admin/typefaces");
+    revalidatePath(`/admin/typefaces/${slug}`);
+    revalidatePath("/fonts");
+    revalidatePath(`/fonts/${slug}`);
+    redirect("/admin/typefaces");
+  }
+
+  const { createClient } = await import("@/lib/supabase/server");
+  const { upload, removeFont } = await import("./upload-helpers");
   const supabase = await createClient();
 
   const tags = (formData.get("tags") as string)
@@ -110,11 +151,11 @@ export async function updateTypeface(slug: string, formData: FormData) {
   if (fontFile) {
     fontPath = await upload(supabase, fontFile, slug);
     if (oldPath && oldPath !== fontPath) {
-      await remove(supabase, oldPath);
+      await removeFont(supabase, oldPath);
     }
   } else if (removeFile) {
     fontPath = null;
-    if (oldPath) await remove(supabase, oldPath);
+    if (oldPath) await removeFont(supabase, oldPath);
   }
 
   const { error } = await supabase
@@ -131,6 +172,9 @@ export async function updateTypeface(slug: string, formData: FormData) {
       tags,
       featured: formData.get("featured") === "on",
       font_path: fontPath,
+      weight_range: parseWeightRange(formData.get("weight_range") as string),
+      default_weight: Number(formData.get("default_weight") || 400),
+      has_italic: formData.get("has_italic") === "on",
       updated_at: new Date().toISOString(),
     })
     .eq("slug", slug);
@@ -145,6 +189,15 @@ export async function updateTypeface(slug: string, formData: FormData) {
 }
 
 export async function deleteTypeface(slug: string) {
+  if (!(await hasSupabaseTables())) {
+    await localDeleteTypeface(slug);
+    revalidatePath("/admin/typefaces");
+    revalidatePath("/fonts");
+    redirect("/admin/typefaces");
+  }
+
+  const { createClient } = await import("@/lib/supabase/server");
+  const { removeFont } = await import("./upload-helpers");
   const supabase = await createClient();
 
   const {
@@ -161,7 +214,7 @@ export async function deleteTypeface(slug: string) {
   if (error) throw new Error(error.message);
 
   if (current?.font_path) {
-    await remove(supabase, current.font_path);
+    await removeFont(supabase, current.font_path);
   }
 
   revalidatePath("/admin/typefaces");

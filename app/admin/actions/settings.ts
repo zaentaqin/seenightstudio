@@ -2,11 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
+import { localUpdateSetting } from "@/lib/local-store";
 
 export async function updateSettings(key: string, formData: FormData) {
-  const supabase = await createClient();
-
   const valueRaw = formData.get("value") as string;
   let value: Record<string, unknown>;
 
@@ -15,6 +14,18 @@ export async function updateSettings(key: string, formData: FormData) {
   } catch {
     throw new Error("Invalid JSON value");
   }
+
+  if (!(await hasSupabaseTables())) {
+    await localUpdateSetting(key, value);
+    revalidatePath("/admin/settings");
+    revalidatePath("/");
+    revalidatePath("/about");
+    revalidatePath("/contact");
+    redirect("/admin/settings");
+  }
+
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
 
   const { error } = await supabase
     .from("settings")

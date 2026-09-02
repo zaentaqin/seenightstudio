@@ -1,13 +1,22 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseTables } from "@/lib/supabase/has-config";
+import { localGetPages } from "@/lib/local-store";
 import { Pencil } from "lucide-react";
 
 export default async function AdminPages() {
-  const supabase = await createClient();
-  const { data: pages } = await supabase
-    .from("pages")
-    .select("*")
-    .order("slug");
+  let pages: { id: string; slug: string; updated_at: string }[] = [];
+
+  if (await hasSupabaseTables()) {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("pages")
+      .select("*")
+      .order("slug");
+    pages = data ?? [];
+  } else {
+    pages = await localGetPages();
+  }
 
   const pageLabels: Record<string, string> = {
     home: "Home",
@@ -32,7 +41,7 @@ export default async function AdminPages() {
           <span className="col-span-1 text-right">Edit</span>
         </div>
 
-        {pages?.map((page) => (
+        {pages.map((page) => (
           <div
             key={page.id}
             className="grid grid-cols-12 items-center gap-4 border-b border-ink/10 px-4 py-3 transition-colors last:border-b-0 hover:bg-ink/5 md:px-6"
