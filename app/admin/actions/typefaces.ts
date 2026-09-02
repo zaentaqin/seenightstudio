@@ -2,12 +2,60 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { writeFile, mkdir, unlink } from "fs/promises";
+import { existsSync } from "fs";
+import path from "path";
 import { hasSupabaseTables } from "@/lib/supabase/has-config";
 import {
   localCreateTypeface,
   localUpdateTypeface,
   localDeleteTypeface,
 } from "@/lib/local-store";
+
+const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "fonts");
+const ALLOWED_EXT = [".otf", ".ttf", ".woff", ".woff2"];
+const MAX_FONT_BYTES = 10 * 1024 * 1024;
+
+function sanitizeFilename(name: string): string {
+  const ext = ALLOWED_EXT.find((e) => name.toLowerCase().endsWith(e));
+  if (!ext) return "";
+  const base = name
+    .replace(/\.[^/.]+$/, "")
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60);
+  return `${base}${ext}`;
+}
+
+async function saveFontFileLocal(
+  file: File,
+  slug: string,
+): Promise<string> {
+  const filename = sanitizeFilename(file.name);
+  if (!filename) throw new Error(`Unsupported file type: ${file.name}`);
+  if (file.size > MAX_FONT_BYTES) {
+    throw new Error(
+      `File too large (${Math.round(file.size / 1024 / 1024)}MB). Max 10MB.`,
+    );
+  }
+
+  const dir = path.join(UPLOAD_DIR, slug);
+  await mkdir(dir, { recursive: true });
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const filePath = path.join(dir, filename);
+  await writeFile(filePath, buffer);
+
+  return `/uploads/fonts/${slug}/${filename}`;
+}
+
+async function removeFontFileLocal(fontPath: string) {
+  if (!fontPath.startsWith("/uploads/fonts/")) return;
+  const fullPath = path.join(process.cwd(), "public", fontPath);
+  if (existsSync(fullPath)) {
+    await unlink(fullPath);
+  }
+}
 
 function fontFileFromForm(formData: FormData): File | null {
   const value = formData.get("fontFile");
@@ -33,6 +81,9 @@ export async function createTypeface(formData: FormData) {
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const fontFile = fontFileFromForm(formData);
+    const fontPath = fontFile ? await saveFontFileLocal(fontFile, slug) : null;
+
     await localCreateTypeface({
       slug,
       name: formData.get("name") as string,
@@ -45,7 +96,7 @@ export async function createTypeface(formData: FormData) {
       description: formData.get("description") as string,
       tags,
       featured: formData.get("featured") === "on",
-      font_path: null,
+      font_path: fontPath,
       weight_range: parseWeightRange(formData.get("weight_range") as string),
       default_weight: Number(formData.get("default_weight") || 400),
       has_italic: formData.get("has_italic") === "on",
@@ -53,6 +104,7 @@ export async function createTypeface(formData: FormData) {
 
     revalidatePath("/admin/typefaces");
     revalidatePath("/fonts");
+    revalidatePath(`/fonts/${slug}`);
     redirect("/admin/typefaces?saved=typeface");
   }
 
@@ -91,6 +143,7 @@ export async function createTypeface(formData: FormData) {
 
   revalidatePath("/admin/typefaces");
   revalidatePath("/fonts");
+  revalidatePath(`/fonts/${slug}`);
   redirect("/admin/typefaces?saved=typeface");
 }
 
@@ -100,6 +153,23 @@ export async function updateTypeface(slug: string, formData: FormData) {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
+
+    const existing = await localGetTypefaceBySlug(slug);
+    const oldPath = existing?.font_path ?? null;
+
+    const fontFile = fontFileFromForm(formData);
+    const removeFile = formData.get("removeFontFile") === "on";
+
+    let fontPath = oldPath;
+    if (fontFile) {
+      fontPath = await saveFontFileLocal(fontFile, slug);
+      if (oldPath && oldPath !== fontPath) {
+        await removeFontFileLocal(oldPath);
+      }
+    } else if (removeFile) {
+      if (oldPath) await removeFontFileLocal(oldPath);
+      fontPath = null;
+    }
 
     await localUpdateTypeface(slug, {
       name: formData.get("name") as string,
@@ -112,6 +182,7 @@ export async function updateTypeface(slug: string, formData: FormData) {
       description: formData.get("description") as string,
       tags,
       featured: formData.get("featured") === "on",
+      font_path: fontPath,
       weight_range: parseWeightRange(formData.get("weight_range") as string),
       default_weight: Number(formData.get("default_weight") || 400),
       has_italic: formData.get("has_italic") === "on",
@@ -190,9 +261,14 @@ export async function updateTypeface(slug: string, formData: FormData) {
 
 export async function deleteTypeface(slug: string) {
   if (!(await hasSupabaseTables())) {
+    const existing = await localGetTypefaceBySlug(slug);
+    if (existing?.font_path) {
+      await removeFontFileLocal(existing.font_path);
+    }
     await localDeleteTypeface(slug);
     revalidatePath("/admin/typefaces");
     revalidatePath("/fonts");
+    revalidatePath(`/fonts/${slug}`);
     redirect("/admin/typefaces?saved=deleted");
   }
 
@@ -219,5 +295,11 @@ export async function deleteTypeface(slug: string) {
 
   revalidatePath("/admin/typefaces");
   revalidatePath("/fonts");
+  revalidatePath(`/fonts/${slug}`);
   redirect("/admin/typefaces?saved=deleted");
+}
+
+async function localGetTypefaceBySlug(slug: string) {
+  const { localGetTypefaceBySlug: get } = await import("@/lib/local-store");
+  return get(slug);
 }

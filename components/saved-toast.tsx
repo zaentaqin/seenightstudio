@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useToast } from "@/components/toast";
-import { CheckCircle } from "lucide-react";
 
 const MESSAGES: Record<string, string> = {
   typeface: "Typeface saved successfully",
