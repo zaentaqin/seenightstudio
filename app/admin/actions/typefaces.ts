@@ -53,7 +53,7 @@ export async function createTypeface(formData: FormData) {
 
     revalidatePath("/admin/typefaces");
     revalidatePath("/fonts");
-    redirect("/admin/typefaces");
+    redirect("/admin/typefaces?saved=typeface");
   }
 
   const { createClient } = await import("@/lib/supabase/server");
@@ -91,7 +91,7 @@ export async function createTypeface(formData: FormData) {
 
   revalidatePath("/admin/typefaces");
   revalidatePath("/fonts");
-  redirect("/admin/typefaces");
+  redirect("/admin/typefaces?saved=typeface");
 }
 
 export async function updateTypeface(slug: string, formData: FormData) {
@@ -121,7 +121,7 @@ export async function updateTypeface(slug: string, formData: FormData) {
     revalidatePath(`/admin/typefaces/${slug}`);
     revalidatePath("/fonts");
     revalidatePath(`/fonts/${slug}`);
-    redirect("/admin/typefaces");
+    redirect("/admin/typefaces?saved=typeface");
   }
 
   const { createClient } = await import("@/lib/supabase/server");
@@ -185,7 +185,7 @@ export async function updateTypeface(slug: string, formData: FormData) {
   revalidatePath(`/admin/typefaces/${slug}`);
   revalidatePath("/fonts");
   revalidatePath(`/fonts/${slug}`);
-  redirect("/admin/typefaces");
+  redirect("/admin/typefaces?saved=typeface");
 }
 
 export async function deleteTypeface(slug: string) {
@@ -193,7 +193,7 @@ export async function deleteTypeface(slug: string) {
     await localDeleteTypeface(slug);
     revalidatePath("/admin/typefaces");
     revalidatePath("/fonts");
-    redirect("/admin/typefaces");
+    redirect("/admin/typefaces?saved=deleted");
   }
 
   const { createClient } = await import("@/lib/supabase/server");
@@ -219,5 +219,5 @@ export async function deleteTypeface(slug: string) {
 
   revalidatePath("/admin/typefaces");
   revalidatePath("/fonts");
-  redirect("/admin/typefaces");
+  redirect("/admin/typefaces?saved=deleted");
 }

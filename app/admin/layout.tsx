@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminSidebar } from "@/components/admin/sidebar";
+import { SavedToast } from "@/components/saved-toast";
 
 export const metadata: Metadata = {
   title: {
@@ -27,6 +28,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen">
+      <SavedToast />
       <AdminSidebar />
       <main className="ml-60 p-8">{children}</main>
     </div>

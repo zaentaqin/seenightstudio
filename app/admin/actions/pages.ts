@@ -20,7 +20,7 @@ export async function updatePage(slug: string, formData: FormData) {
     revalidatePath("/admin/pages");
     revalidatePath(`/admin/pages/${slug}`);
     revalidatePath(`/${slug}`);
-    redirect("/admin/pages");
+    redirect("/admin/pages?saved=page");
   }
 
   const { createClient } = await import("@/lib/supabase/server");
@@ -39,5 +39,5 @@ export async function updatePage(slug: string, formData: FormData) {
   revalidatePath("/admin/pages");
   revalidatePath(`/admin/pages/${slug}`);
   revalidatePath(`/${slug}`);
-  redirect("/admin/pages");
+  redirect("/admin/pages?saved=page");
 }

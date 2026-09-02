@@ -21,7 +21,7 @@ export async function updateSettings(key: string, formData: FormData) {
     revalidatePath("/");
     revalidatePath("/about");
     revalidatePath("/contact");
-    redirect("/admin/settings");
+    redirect("/admin/settings?saved=settings");
   }
 
   const { createClient } = await import("@/lib/supabase/server");
@@ -41,5 +41,5 @@ export async function updateSettings(key: string, formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/contact");
-  redirect("/admin/settings");
+  redirect("/admin/settings?saved=settings");
 }

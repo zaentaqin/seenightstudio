@@ -9,15 +9,21 @@
     "price": 120,
     "year": 2025,
     "tagline": "A workhorse sans for the dark hours.",
-    "description": "Nocturne Grotesk is a nine-weight superfamily built for interfaces that never sleep. Its tight spacing and open apertures stay legible from billboard to breadcrumb, with a variable weight axis that swings from hairline whispers to black-out shouting.",
-    "tags": ["variable", "grotesk", "ui", "branding", "editorial"],
+    "description": "Nocturne Grotesk is a nine-weight superfamily built for interfaces that never sleep. Its tight spacing and open apertures stay legible from billboard to breadcrumb, with a variable weight axis that swings from hairline whispers to black-out shouting. joooo",
+    "tags": [
+      "variable",
+      "grotesk",
+      "ui",
+      "branding",
+      "editorial"
+    ],
     "featured": true,
     "font_path": null,
     "weight_range": "[100,900]",
     "default_weight": 500,
     "has_italic": false,
     "created_at": "2025-01-01T00:00:00Z",
-    "updated_at": "2025-01-01T00:00:00Z"
+    "updated_at": "2026-09-02T16:37:35.295Z"
   },
   {
     "id": "2",
@@ -30,7 +36,12 @@
     "year": 2026,
     "tagline": "Fat letters, zero apologies.",
     "description": "Moonfat is a single-style display monster drawn at maximum density. Counters are an afterthought; impact is the point. Use it where the message must survive being read at fifty meters, or while squinting.",
-    "tags": ["poster", "heavy", "branding", "headline"],
+    "tags": [
+      "poster",
+      "heavy",
+      "branding",
+      "headline"
+    ],
     "featured": true,
     "font_path": null,
     "weight_range": null,
@@ -50,7 +61,12 @@
     "year": 2024,
     "tagline": "Editorial elegance with a restless pulse.",
     "description": "Insomnia Serif pairs razor-thin hairlines with wedge serifs for headlines that feel pulled straight from a midnight magazine spread. Comes with true italics that lean harder than they should.",
-    "tags": ["editorial", "magazine", "elegant", "high-contrast"],
+    "tags": [
+      "editorial",
+      "magazine",
+      "elegant",
+      "high-contrast"
+    ],
     "featured": true,
     "font_path": null,
     "weight_range": null,
@@ -70,7 +86,12 @@
     "year": 2025,
     "tagline": "Code, captions, and cargo manifests.",
     "description": "Nightshift Mono treats monospace as a personality, not a punishment. Generous x-height, unambiguous glyphs, and punctuation tuned for long reading sessions that end long after they should.",
-    "tags": ["code", "technical", "ui", "monospace"],
+    "tags": [
+      "code",
+      "technical",
+      "ui",
+      "monospace"
+    ],
     "featured": false,
     "font_path": null,
     "weight_range": "[100,800]",
@@ -90,7 +111,12 @@
     "year": 2023,
     "tagline": "The darkest black, written by hand.",
     "description": "Vanta Script is a connected brush script with an attitude problem in the best way. Swashes land where you want them, ligatures tie the room together, and the weight axis pours from espresso-thin to syrup-heavy.",
-    "tags": ["handwritten", "logo", "packaging", "script"],
+    "tags": [
+      "handwritten",
+      "logo",
+      "packaging",
+      "script"
+    ],
     "featured": true,
     "font_path": null,
     "weight_range": "[400,700]",
@@ -109,15 +135,20 @@
     "price": 110,
     "year": 2024,
     "tagline": "Every poster is a tall order.",
-    "description": "Afterhours Condensed squeezes six weights and two widths into every vertical inch of your layout. Built for gig posters, ticket stubs, and anywhere horizontal space sold out early.",
-    "tags": ["condensed", "poster", "variable", "headline"],
+    "description": "Afterhours Condensed squeezes six weights and two widths into every vertical inch of your layout. Built for gig posters, ticket stubs, and anywhere horizontal space sold out early. jooooooo",
+    "tags": [
+      "condensed",
+      "poster",
+      "variable",
+      "headline"
+    ],
     "featured": false,
     "font_path": null,
     "weight_range": "[200,700]",
     "default_weight": 400,
     "has_italic": false,
     "created_at": "2025-01-01T00:00:00Z",
-    "updated_at": "2025-01-01T00:00:00Z"
+    "updated_at": "2026-09-02T16:37:22.732Z"
   },
   {
     "id": "7",
@@ -130,7 +161,12 @@
     "year": 2022,
     "tagline": "Heavy shoulders for heavy stories.",
     "description": "Stargazer Slab is a nine-weight slab serif with italics, designed for brands that need warmth without softness. Its bracketed serifs hold up under print pressure and screen glare alike.",
-    "tags": ["variable", "slab", "robust", "branding"],
+    "tags": [
+      "variable",
+      "slab",
+      "robust",
+      "branding"
+    ],
     "featured": false,
     "font_path": null,
     "weight_range": "[100,900]",
@@ -150,7 +186,13 @@
     "year": 2026,
     "tagline": "Wide awake and taking up space.",
     "description": "Lucid Wide is an expanded geometric sans that refuses to whisper. Seven weights, variable width, and a lowercase that behaves like small caps with better manners.",
-    "tags": ["wide", "geometric", "variable", "fashion", "poster"],
+    "tags": [
+      "wide",
+      "geometric",
+      "variable",
+      "fashion",
+      "poster"
+    ],
     "featured": true,
     "font_path": null,
     "weight_range": "[200,900]",
