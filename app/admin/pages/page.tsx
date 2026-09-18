@@ -27,14 +27,17 @@ export default async function AdminPages() {
   return (
     <>
       <div>
-        <h1 className="text-3xl font-bold tracking-tighter uppercase">Pages</h1>
+        <h1 className="text-2xl font-bold tracking-tighter uppercase md:text-3xl">
+          Pages
+        </h1>
         <p className="mt-2 font-mono text-[10px] tracking-[0.2em] text-ink/40 uppercase">
           Edit page content
         </p>
       </div>
 
-      <div className="mt-8 border border-ink/15">
-        <div className="grid grid-cols-12 gap-4 border-b border-ink/15 bg-ink/5 px-4 py-3 font-mono text-[9px] tracking-[0.2em] text-ink/50 uppercase md:px-6">
+      {/* Desktop table */}
+      <div className="mt-8 hidden border border-ink/15 md:block">
+        <div className="grid grid-cols-12 gap-4 border-b border-ink/15 bg-ink/5 px-6 py-3 font-mono text-[9px] tracking-[0.2em] text-ink/50 uppercase">
           <span className="col-span-4">Page</span>
           <span className="col-span-4">Slug</span>
           <span className="col-span-3">Updated</span>
@@ -44,7 +47,7 @@ export default async function AdminPages() {
         {pages.map((page) => (
           <div
             key={page.id}
-            className="grid grid-cols-12 items-center gap-4 border-b border-ink/10 px-4 py-3 transition-colors last:border-b-0 hover:bg-ink/5 md:px-6"
+            className="grid grid-cols-12 items-center gap-4 border-b border-ink/10 px-6 py-3 transition-colors last:border-b-0 hover:bg-ink/5"
           >
             <span className="col-span-4 text-sm font-bold">
               {pageLabels[page.slug] ?? page.slug}
@@ -64,6 +67,27 @@ export default async function AdminPages() {
               </Link>
             </div>
           </div>
+        ))}
+      </div>
+
+      {/* Mobile cards */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {pages.map((page) => (
+          <Link
+            key={page.id}
+            href={`/admin/pages/${page.slug}`}
+            className="flex items-center justify-between border border-ink/15 p-4 transition-colors hover:border-ink/30 hover:bg-ink/5"
+          >
+            <div>
+              <p className="text-sm font-bold">
+                {pageLabels[page.slug] ?? page.slug}
+              </p>
+              <p className="mt-1 font-mono text-[10px] text-ink/40">
+                /{page.slug}
+              </p>
+            </div>
+            <Pencil className="h-4 w-4 shrink-0 text-ink/30" />
+          </Link>
         ))}
       </div>
     </>

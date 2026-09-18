@@ -5,7 +5,7 @@ import { CATEGORIES } from "@/lib/typefaces";
 export default function NewTypefacePage() {
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tighter uppercase">
+      <h1 className="text-2xl font-bold tracking-tighter uppercase md:text-3xl">
         New Typeface
       </h1>
       <p className="mt-2 font-mono text-[10px] tracking-[0.2em] text-ink/40 uppercase">
@@ -13,12 +13,12 @@ export default function NewTypefacePage() {
       </p>
 
       <form action={createTypeface} className="mt-8 max-w-2xl space-y-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field name="slug" label="Slug" placeholder="nocturne-grotesk" required />
           <Field name="name" label="Name" placeholder="Nocturne Grotesk" required />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field name="designer" label="Designer" placeholder="See Night Studio" required />
           <div>
             <label className="mb-1.5 block font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
@@ -38,7 +38,7 @@ export default function NewTypefacePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Field name="styles" label="Styles" type="number" placeholder="18" required />
           <Field name="price" label="Price (USD)" type="number" placeholder="120" required />
           <Field name="year" label="Year" type="number" placeholder="2025" required />
@@ -64,7 +64,7 @@ export default function NewTypefacePage() {
           placeholder="variable, grotesk, ui, branding"
         />
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Field
             name="weight_range"
             label="Weight range"

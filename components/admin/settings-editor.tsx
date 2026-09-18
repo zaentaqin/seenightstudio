@@ -90,7 +90,7 @@ function LinkList({
               value={item.label}
               onChange={(e) => update(i, "label", e.target.value)}
               placeholder="Label"
-              className="block w-1/2 border border-ink/25 bg-transparent px-3 py-2.5 text-sm outline-none transition-colors focus:border-ink"
+              className="block w-full border border-ink/25 bg-transparent px-3 py-2.5 text-sm outline-none transition-colors focus:border-ink md:w-1/2"
             />
             <input
               type="text"
@@ -237,7 +237,7 @@ function FooterEditor({
       {/* Footer text fields */}
       <section className="space-y-4">
         <h2 className="text-sm font-bold tracking-tight uppercase">Footer Text</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <Label>Copyright</Label>
             <input

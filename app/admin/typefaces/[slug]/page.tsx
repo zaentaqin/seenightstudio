@@ -31,7 +31,7 @@ export default async function EditTypefacePage({
 
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tighter uppercase">
+      <h1 className="text-2xl font-bold tracking-tighter uppercase md:text-3xl">
         Edit Typeface
       </h1>
       <p className="mt-2 font-mono text-[10px] tracking-[0.2em] text-ink/40 uppercase">
@@ -39,12 +39,12 @@ export default async function EditTypefacePage({
       </p>
 
       <form action={updateTypeface.bind(null, slug)} className="mt-8 max-w-2xl space-y-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field name="name" label="Name" defaultValue={String(font.name)} required />
           <Field name="designer" label="Designer" defaultValue={String(font.designer)} required />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label className="mb-1.5 block font-mono text-[10px] tracking-[0.2em] text-ink/50 uppercase">
               Category
@@ -65,7 +65,7 @@ export default async function EditTypefacePage({
           <Field name="year" label="Year" type="number" defaultValue={Number(font.year)} required />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field name="styles" label="Styles" type="number" defaultValue={Number(font.styles)} required />
           <Field name="price" label="Price (USD)" type="number" defaultValue={Number(font.price)} required />
         </div>
@@ -91,7 +91,7 @@ export default async function EditTypefacePage({
           defaultValue={Array.isArray(font.tags) ? (font.tags as string[]).join(", ") : ""}
         />
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Field
             name="weight_range"
             label="Weight range"
